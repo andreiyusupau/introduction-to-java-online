@@ -29,7 +29,7 @@ public class Sort4 {
         int count;
         count = sort4(a);
 
-        System.out.println("Массив после сортировки (количество обменов: " + count + " ): ");
+        System.out.println("Массив после сортировки по возрастанию(количество обменов: " + count + " ): ");
         System.out.println(Arrays.toString(a));
     }
 
