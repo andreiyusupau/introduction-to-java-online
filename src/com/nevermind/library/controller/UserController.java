@@ -1,40 +1,65 @@
 package com.nevermind.library.controller;
 
+import com.nevermind.library.dao.FileBookDAO;
 import com.nevermind.library.dao.FileUserDAO;
+import com.nevermind.library.dao.UserDAO;
 import com.nevermind.library.model.role.User;
 import com.nevermind.library.util.UserUtil;
 import com.nevermind.library.view.Menu;
 
 public class UserController {
 
-    private FileUserDAO userDAO;
+    private UserDAO userDAO;
     private Menu menu;
     private User currentUser;
 
-    public void login(String email,String password){
+    public UserController(Menu menu) {
+        userDAO = new FileUserDAO();
+        this.menu = menu;
+    }
+
+    public boolean login(String email, String password) {
         byte[] hashedPassword;
-        hashedPassword= UserUtil.hashPass(password);
-currentUser=userDAO.read(email,hashedPassword);
-if(currentUser==null){
-    System.out.println("Введенный email или пароль неверны");
-menu.loginForm();
-}else {
-    //menu.catalogue();
-}
+        hashedPassword = UserUtil.hashPass(password);
+        currentUser = userDAO.read(email, hashedPassword);
+        hashedPassword = null;
+        return currentUser != null;
     }
 
-    public void register(String firstName,String middleName, String lastName,String email,String password){
+    public void register(String firstName, String middleName, String lastName, String email, String password) {
+        if (!(firstName.contains("/") || middleName.contains("/") || lastName.contains("/") || email.contains("/") || password.contains("/"))) {
+            if (UserUtil.isEmailValid(email)) {
+                byte[] hashedPassword;
+                hashedPassword = UserUtil.hashPass(password);
+                userDAO.create(new User(firstName, middleName, lastName, email, hashedPassword, false));
+                hashedPassword = null;
+                System.out.println("Пользователь успешно добавлен.");
+                menu.loginForm();
+            } else {
+                System.err.println("Введенный email не соответствует шаблону");
+                menu.enterMenu();
+            }
+
+        } else {
+            System.err.println("Введенные данные не должны содержать знак \"/\"");
+            menu.enterMenu();
+        }
+    }
+
+    public boolean isAdmin() {
+        return currentUser.isAdmin();
+    }
+
+    public void notifyUsers(String text) {
 
     }
-public void notifyUsers(){
 
-}
-    public void notifyAdmins(){
+    public void notifyAdmins(String text) {
 
-}
+    }
 
 
-private void sendMail(){
+    private void sendMail() {
    /*public class SendEmail
 {
 
@@ -85,5 +110,5 @@ private void sendMail(){
       }
    }
 } */
-}
+    }
 }

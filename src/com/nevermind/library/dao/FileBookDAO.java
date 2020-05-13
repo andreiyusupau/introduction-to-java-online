@@ -1,5 +1,6 @@
 package com.nevermind.library.dao;
 
+import com.nevermind.library.controller.BookController;
 import com.nevermind.library.model.book.Book;
 import com.nevermind.library.model.book.EBook;
 import com.nevermind.library.model.book.PaperBook;
@@ -11,20 +12,28 @@ import java.util.List;
 public class FileBookDAO implements BookDAO {
     private final String fileName = "bookList.txt";
     private File file = new File(fileName);
+    private static int currentId;
+
+    public FileBookDAO() {
+        ArrayList<Book> books = (ArrayList<Book>) readAll();
+        currentId = books.get(books.size() - 1).getId();
+    }
 
     @Override
-    public void create(Book book) {
+    public boolean create(Book book) {
 
         if (!file.exists()) {
             try {
                 file.createNewFile();
             } catch (IOException ioe) {
                 System.err.println("Не удалось создать новый файл");
+                return false;
             }
         }
 
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(file, true))) {
-
+            book.setId(currentId);
+            currentId++;
             String bookStr;
             bookStr = book.toString();
 
@@ -32,8 +41,10 @@ public class FileBookDAO implements BookDAO {
                 bw.newLine();
             }
             bw.write(bookStr);
+            return true;
         } catch (IOException io) {
             System.err.println("Ошибка при записи в файл");
+            return false;
         }
     }
 
@@ -44,7 +55,7 @@ public class FileBookDAO implements BookDAO {
             int counter = 0;
             String currLine;
             while ((currLine = br.readLine()) != null && counter < bookId) {
-                br.readLine();
+                // br.readLine();
                 counter++;
             }
             String[] bookDetails;
@@ -198,6 +209,8 @@ public class FileBookDAO implements BookDAO {
 
     @Override
     public List<Book> searchByName(String name) {
+        String nameLC;
+        nameLC = name.toLowerCase();
         List<Book> books = new ArrayList<>();
         try (BufferedReader br
                      = new BufferedReader(new FileReader(file))) {
@@ -206,7 +219,7 @@ public class FileBookDAO implements BookDAO {
 
                 String[] bookDetails;
                 bookDetails = currLine.trim().split("/");
-                if (bookDetails[0].equals(name)) {
+                if (bookDetails[0].toLowerCase().equals(nameLC)) {
                     Book book;
                     book = initBook(bookDetails);
                     books.add(book);
@@ -222,6 +235,8 @@ public class FileBookDAO implements BookDAO {
 
     @Override
     public List<Book> searchByAuthor(String author) {
+        String authorLC;
+        authorLC = author.toLowerCase();
         List<Book> books = new ArrayList<>();
         try (BufferedReader br
                      = new BufferedReader(new FileReader(file))) {
@@ -231,7 +246,7 @@ public class FileBookDAO implements BookDAO {
 
                 String[] bookDetails;
                 bookDetails = currLine.trim().split("/");
-                if (bookDetails[1].equals(author)) {
+                if (bookDetails[1].toLowerCase().equals(authorLC)) {
                     Book book;
                     book = initBook(bookDetails);
                     books.add(book);

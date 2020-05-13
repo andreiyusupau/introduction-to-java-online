@@ -1,6 +1,7 @@
 package com.nevermind.library.model.book;
 
 public abstract class Book {
+    private int id;
     private String name;
     private String author;
     private String publisher;
@@ -29,8 +30,16 @@ public abstract class Book {
         return yearOfPublishing;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
-        return name+"/"+author+"/"+publisher+"/"+yearOfPublishing+"/";
+        return name + "/" + author + "/" + publisher + "/" + yearOfPublishing + "/";
     }
 }

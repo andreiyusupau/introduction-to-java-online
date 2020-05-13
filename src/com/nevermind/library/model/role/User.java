@@ -20,14 +20,18 @@ public class User {
 
     @Override
     public String toString() {
-        return firstName+"/"+ middleName+"/"+ lastName+"/"+ email+"/"+ hashedPassword+"/"+ isAdmin;
+        return firstName + "/" + middleName + "/" + lastName + "/" + email + "/" + hashedPassword + "/" + isAdmin;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public byte[]  getHashedPassword() {
+    public byte[] getHashedPassword() {
         return hashedPassword;
+    }
+
+    public boolean isAdmin() {
+        return isAdmin;
     }
 }

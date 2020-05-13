@@ -3,10 +3,8 @@ package com.nevermind.library.view;
 import com.nevermind.library.controller.BookController;
 import com.nevermind.library.controller.UserController;
 import com.nevermind.library.model.book.Book;
-import java.io.BufferedReader;
-import java.io.Console;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import com.nevermind.library.util.MenuUtil;
+
 import java.util.ArrayList;
 
 public class Menu {
@@ -14,7 +12,13 @@ public class Menu {
     BookController bc;
     UserController uc;
 
-    public void enterMenu(){
+    public Menu() {
+        bc = new BookController(this);
+        uc = new UserController(this);
+        enterMenu();
+    }
+
+    public void enterMenu() {
 
         //цикл для работы с меню до нажатия кнопки "выход"
         boolean work = true;
@@ -23,7 +27,7 @@ public class Menu {
             System.out.println("1 - Войти\n2 - Зарегистрироваться\n0 - Выход");
 
             int n;
-            n = readN("Ваши действия: ", 0, 2); //считываем выбор пользователя
+            n = MenuUtil.readN("Ваши действия: ", 0, 2); //считываем выбор пользователя
 
             //переходим в определнную ветку программы или выходим из нее
             switch (n) {
@@ -33,12 +37,18 @@ public class Menu {
             }
         }
     }
-    public void loginForm(){
+
+    public void loginForm() {
         String email;
         String password;
-        email=readS("Введите email :");
-        password=readPass("Введите пароль: ");
-        uc.login(email,password);
+        email = MenuUtil.readS("Введите email :");
+        password = MenuUtil.readPass("Введите пароль: ");
+        if (uc.login(email, password)) {
+            System.err.println("Пользователь с таким email и паролем не найден");
+            enterMenu();
+        } else {
+            catalogue(1, bc.getPage(1));
+        }
     }
 
     public void registerForm() {
@@ -46,215 +56,161 @@ public class Menu {
         String middleName;
         String lastName;
         String email;
-        String password="";
-        String passwordRepeat="r";
+        String password = "";
+        String passwordRepeat = "r";
 
-        firstName=readS("Введите ваше имя :");
-        middleName=readS("Введите ваше отчество :");
-        lastName=readS("Введите вашу фамилию :");
-        email=readS("Введите ваш email :");
-        while (!password.equals(passwordRepeat)){
-            password=readS("Введите пароль: ");
-            passwordRepeat=readS("Повторно введите пароль: ");
+        firstName = MenuUtil.readS("Введите ваше имя :");
+        middleName = MenuUtil.readS("Введите ваше отчество :");
+        lastName = MenuUtil.readS("Введите вашу фамилию :");
+        email = MenuUtil.readS("Введите ваш email :");
+        while (!password.equals(passwordRepeat)) {
+            password = MenuUtil.readPass("Введите пароль: ");
+            passwordRepeat = MenuUtil.readPass("Повторно введите пароль: ");
         }
-        if(password!=null){
-            uc.register(firstName,middleName,lastName,email,password);
+        if (password != null) {
+            uc.register(firstName, middleName, lastName, email, password);
         }
 
     }
 
-    public String readPass(String question){
-        Console console=System.console();
-        if(console==null){
-            System.err.println("Не удается сосздать консоль");
-            return null;
-        }
-        System.out.println(question);
-        String pass="/";
-        while (pass.length()<8&&pass.contains("/")){
-           pass= String.valueOf(console.readPassword());
-        }
-        return pass;
-    }
-    /*
 
- PasswordMaskingThread thread = new PasswordMaskingThread();
-thread.start();
-System.out.println( "Password is: " + thread.getPassword() );
-}
-
-
-
-
-public String getPassword()
-throws IOException
-{
-String pass = "";
-while (true)
-{
-// Blocks until a line is read (ie enter is pressed)
-char c = (char)System.in.read();
-
-// assume enter pressed, stop masking
-this.typing = false;
-
-if (c == '\n' || c == '\r')
-{
-break;
-}
-else
-{
-pass += c; // store pass
-}
-}
-return pass;
-}
-}
-}
-    */
-
-
-
-    public void catalogue(ArrayList<Book> books){
+    public void catalogue(int page, ArrayList<Book> books) {
         //цикл для работы с меню до нажатия кнопки "выход"
         boolean work = true;
         while (work) {
             System.out.println("КАТАЛОГ КНИГ");
+            System.out.println("Страница " + page);
+            for (Book book : books) {
+                System.out.println(book.toString());
+            }
             System.out.println("1 - Предыдущая страница\n2 - Следующая страница\n3 - Поиск книги\n" +
                     "4 - Информация о книге\n5 - Добавление книги\n0 - Выход");
 
             int n;
-            n = readN("Ваши действия: ", 0, 5); //считываем выбор пользователя
+            n = MenuUtil.readN("Ваши действия: ", 0, 5); //считываем выбор пользователя
 
             //переходим в определнную ветку программы или выходим из нее
             switch (n) {
-                case 1 -> bc.previousPage();
-                case 2 -> bc.nextPage();
+                case 1 -> bc.previousPage(page);
+                case 2 -> bc.nextPage(page);
                 case 3 -> searchMenu();
-                case 4 -> bc.getBookInfo(readN("Номер книги из каталога: ", 0, 5)); //считываем выбор пользователя);
-                case 5 -> addBookMenu();
+                case 4 -> bc.getBookInfo(MenuUtil.readN("Номер книги из каталога: ", 0, 5)); //считываем выбор пользователя);
+                case 5 -> {
+                    if (uc.isAdmin()) {
+                        addBookMenu();
+                    } else {
+                        recommendBookMenu();
+                    }
+                }
                 case 0 -> work = false; //выход из программы
             }
         }
     }
 
     private void addBookMenu() {
+        System.out.println("ДОБАВИТЬ КНИГУ");
+        boolean isElectronic;
+        isElectronic = MenuUtil.readN("Создать 1 - бумажную или 2 - электронную книгу?", 1, 2) == 2;
+        if (isElectronic) {
+            if (bc.addBook(MenuUtil.readS("Введите название книги :"),
+                    MenuUtil.readS("Введите автора книги :"),
+                    MenuUtil.readS("Введите новое издательство книги :"),
+                    MenuUtil.readN("Введите новый год публикации книги :", 0, 2020),
+                    MenuUtil.readS("Введите формат электронной книги :"))) {
+                uc.notifyUsers("В библиотеку добавлена новая электронная книга");
+            }
+        } else {
+            if (bc.addBook(MenuUtil.readS("Введите название книги :"),
+                    MenuUtil.readS("Введите автора книги :"),
+                    MenuUtil.readS("Введите новое издательство книги :"),
+                    MenuUtil.readN("Введите новый год публикации книги :", 0, 2020),
+                    MenuUtil.readN("Введите тип переплета (1- твердый , 2 - мягкий): ", 1, 2) == 1)) {
+                uc.notifyUsers("В библиотеку добавлена новая бумажная книга");
+            }
+        }
+    }
+
+    private void recommendBookMenu() {
+        System.out.println("РЕКОМЕНДОВАТЬ КНИГУ К ДОБАВЛЕНИЮ");
+        boolean isElectronic;
+        isElectronic = MenuUtil.readN("Рекомендовать 1 - бумажную или 2 - электронную книгу?", 1, 2) == 2;
+        StringBuffer sb = new StringBuffer();
+        sb.append("Уважаемые администраторы , предлагаю добавить в библиотеку следующую электронную книгу:");
+        sb.append("\n");
+        sb.append(MenuUtil.readS("Введите название книги :"));
+        sb.append("\n");
+        sb.append(MenuUtil.readS("Введите автора книги :"));
+        sb.append("\n");
+        sb.append(MenuUtil.readS("Введите новое издательство книги :"));
+        sb.append("\n");
+        sb.append(MenuUtil.readN("Введите новый год публикации книги :", 0, 2020));
+        sb.append("\n");
+        if (isElectronic) {
+            sb.append(MenuUtil.readS("Введите формат электронной книги :"));
+        } else {
+            sb.append((MenuUtil.readN("Введите тип переплета (1- твердый , 2 - мягкий): ", 1, 2) == 1) ? "Твердый переплет" : "Мягкий переплет");
+        }
+        uc.notifyAdmins(sb.toString());
     }
 
     private void searchMenu() {
+        //цикл для работы с меню до нажатия кнопки "выход"
+        boolean work = true;
+        while (work) {
+            System.out.println("ПОИСК КНИГ");
+            System.out.println("1 - Искать по названию\n2 - Искать по автору\n0 - Выход");
+
+            int n;
+            n = MenuUtil.readN("Ваши действия: ", 0, 2); //считываем выбор пользователя
+
+            //переходим в определнную ветку программы или выходим из нее
+            switch (n) {
+                case 1 -> bc.searchBookByName(MenuUtil.readS("Введите название книги: "));
+                case 2 -> bc.searchBookByAuthor(MenuUtil.readS("Введите автора книги: "));
+                case 0 -> work = false; //выход из программы
+            }
+        }
     }
 
-    public void bookInfo(Book book){
-        boolean adminMenu;
-        adminMenu= uc.isAdmin();
-        boolean isElectronic;
-        isElectronic=bc.isElectronic(book);
+    public void bookInfo(Book book) {
+
         //цикл для работы с меню до нажатия кнопки "выход"
         boolean work = true;
         while (work) {
             System.out.println("Информация о книге");
             System.out.println(book.toString());
             int n;
-            if(adminMenu){
+            if (uc.isAdmin()) {
                 System.out.println("1 - Редактировать информацию о книге\n2 - Удалить книгу\n0 - Выход");
-                n = readN("Ваши действия: ", 0, 2); //считываем выбор пользователя
-            }else{
+                n = MenuUtil.readN("Ваши действия: ", 0, 2); //считываем выбор пользователя
+            } else {
                 n = 0;
             }
             //переходим в определнную ветку программы или выходим из нее
             switch (n) {
-                case 1 -> bc.editBook(book,readS("Текущее название книги"+book.getName()+"Введите новое название книги :"),
-                        readS("Текущий автор книги"+book.getAuthor()+"Введите нового автора книги :"),
-                        readS("Текущее издательство книги"+book.getPublisher()+"Введите новое издательство книги :"),
-                        readN("Текущий год публикации книги"+book.getYearOfPublishing()+"Введите новый год публикации книги :",0,2020),
-                        isElectronic?readS("Введите формат электронной книги :"):readN("Тип переплета? 1 - твердый, 2 - мягкий",1,2));
-                case 2 -> {
-                    if(readN("Удалить выбранную книгу? 1 - да, 2 - нет.",1,2)==1){
-                        bc.deleteBook(book);
+                case 1 -> {
+                    if (BookController.isElectronic(book)) {
+                        bc.updateBook(book.getId(), MenuUtil.readS("Текущее название книги " + book.getName() + ". Введите новое название книги :"),
+                                MenuUtil.readS("Текущий автор книги " + book.getAuthor() + ". Введите нового автора книги :"),
+                                MenuUtil.readS("Текущее издательство книги " + book.getPublisher() + ". Введите новое издательство книги :"),
+                                MenuUtil.readN("Текущий год публикации книги " + book.getYearOfPublishing() + ". Введите новый год публикации книги :", 0, 2020),
+                                MenuUtil.readS("Введите формат электронной книги :"));
+                    } else {
+                        bc.updateBook(book.getId(), MenuUtil.readS("Текущее название книги " + book.getName() + ". Введите новое название книги :"),
+                                MenuUtil.readS("Текущий автор книги " + book.getAuthor() + ". Введите нового автора книги :"),
+                                MenuUtil.readS("Текущее издательство книги " + book.getPublisher() + ". Введите новое издательство книги :"),
+                                MenuUtil.readN("Текущий год публикации книги " + book.getYearOfPublishing() + ". Введите новый год публикации книги :", 0, 2020),
+                                MenuUtil.readN("Введите тип переплета (1- твердый , 2 - мягкий): ", 1, 2) == 1);
+                    }
                 }
+                case 2 -> {
+                    if (MenuUtil.readN("Удалить выбранную книгу? 1 - да, 2 - нет.", 1, 2) == 1) {
+                        bc.deleteBook(book.getId());
+                    }
                 }
                 case 3 -> work = false;
             }
         }
-
-    }
-
-
-
-    //функция для ввода n с клавиатуры
-    private static int readN(String question, int min, int max) {
-
-        //Инициализируем объект класса BufferedReader для считывания ввода с клавиатуры
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
-        int n;
-
-        //Применение while(true) и break позволит повторять операцию ввода пока не будет введено правильное число
-        while (true) {
-
-            /*Так как метод parseInt выбрасывает исключение NumberFormatException, а метод redLine - исключение IOException,
-            применяем конструкцию try-catch*/
-
-            try {
-                System.out.print(question);
-
-                //считываем ввод с клавиатуры и пытаемся присваивоить его переменной n
-                n = Integer.parseInt(br.readLine());
-
-                //Если введённое n не является положительным числом, выводим ошибку, цикл повторяется
-                if (n < min || n > max) {
-                    System.err.println("Значение должно лежать в пределах от " + min + " до " + max);
-                }
-                //Если введённое n является подходящим, выходим из цикла
-                else {
-                    break;
-                }
-            } catch (NumberFormatException nfe) {
-                System.err.println("Неправильный формат данных.");
-            } catch (IOException ioe) {
-                System.err.println("Проблема при вводе данных.");
-            }
-        }
-        return n;
-    }
-
-    //функция для ввода s с клавиатуры
-    private static String readS(String question) {
-
-        //Инициализируем объект класса BufferedReader для считывания ввода с клавиатуры
-
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
-        String s;
-
-        //Применение while(true) и break позволит повторять операцию ввода пока не будет введено правильное значение
-        while (true) {
-
-            /*Так как метод parseInt выбрасывает исключение NumberFormatException, а метод readLine - исключение IOException,
-            применяем конструкцию try-catch*/
-
-            try {
-                System.out.print(question);
-
-                //считываем ввод с клавиатуры и пытаемся присваивоить его переменной s
-                s = String.valueOf(br.readLine());
-
-                //Если введённое s пустое повторяем цикл
-                if (s.equals("")) {
-                    System.err.println("Введите хоть что-нибудь.");
-                }
-                //Если введённое s является подходящим, выходим из цикла
-                else {
-                    break;
-                }
-            } catch (NumberFormatException nfe) {
-                System.err.println("Неправильный формат данных.");
-
-            } catch (IOException ioe) {
-                System.err.println("Проблема при вводе данных.");
-            }
-        }
-        return s;
 
     }
 }
