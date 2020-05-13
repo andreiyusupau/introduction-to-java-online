@@ -2,13 +2,19 @@ package com.nevermind.library.dao;
 
 import com.nevermind.library.model.role.User;
 
+import java.util.List;
+
 public interface UserDAO {
 
-    public void create(User user);
+    void create(User user);
 
-    public User read(String email, String password);
+    User read(String email, byte[] hashedPassword);
 
-    public void  update(User user);
+    List<User> readUsers();
 
-    public void  delete(String email);
+   List<User> readAdmins();
+
+     void  update(User user);
+
+    void  delete(String email);
 }

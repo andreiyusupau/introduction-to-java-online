@@ -4,8 +4,10 @@ import com.nevermind.library.controller.BookController;
 import com.nevermind.library.controller.UserController;
 import com.nevermind.library.model.book.Book;
 import java.io.BufferedReader;
+import java.io.Console;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 public class Menu {
 
@@ -35,7 +37,7 @@ public class Menu {
         String email;
         String password;
         email=readS("Введите email :");
-        password=readS("Введите пароль: ");
+        password=readPass("Введите пароль: ");
         uc.login(email,password);
     }
 
@@ -44,24 +46,80 @@ public class Menu {
         String middleName;
         String lastName;
         String email;
-        String password;
+        String password="";
+        String passwordRepeat="r";
 
         firstName=readS("Введите ваше имя :");
         middleName=readS("Введите ваше отчество :");
         lastName=readS("Введите вашу фамилию :");
         email=readS("Введите ваш email :");
-        password=readS("Введите пароль: ");
-        uc.register(firstName,middleName,lastName,email,password);
+        while (!password.equals(passwordRepeat)){
+            password=readS("Введите пароль: ");
+            passwordRepeat=readS("Повторно введите пароль: ");
+        }
+        if(password!=null){
+            uc.register(firstName,middleName,lastName,email,password);
+        }
+
     }
 
+    public String readPass(String question){
+        Console console=System.console();
+        if(console==null){
+            System.err.println("Не удается сосздать консоль");
+            return null;
+        }
+        System.out.println(question);
+        String pass="/";
+        while (pass.length()<8&&pass.contains("/")){
+           pass= String.valueOf(console.readPassword());
+        }
+        return pass;
+    }
+    /*
 
-    public void catalogue(int from,int to,int page){
+ PasswordMaskingThread thread = new PasswordMaskingThread();
+thread.start();
+System.out.println( "Password is: " + thread.getPassword() );
+}
+
+
+
+
+public String getPassword()
+throws IOException
+{
+String pass = "";
+while (true)
+{
+// Blocks until a line is read (ie enter is pressed)
+char c = (char)System.in.read();
+
+// assume enter pressed, stop masking
+this.typing = false;
+
+if (c == '\n' || c == '\r')
+{
+break;
+}
+else
+{
+pass += c; // store pass
+}
+}
+return pass;
+}
+}
+}
+    */
+
+
+
+    public void catalogue(ArrayList<Book> books){
         //цикл для работы с меню до нажатия кнопки "выход"
         boolean work = true;
         while (work) {
             System.out.println("КАТАЛОГ КНИГ");
-            System.out.println("Страница "+page);
-          //  bc.getBooks(from,to);
             System.out.println("1 - Предыдущая страница\n2 - Следующая страница\n3 - Поиск книги\n" +
                     "4 - Информация о книге\n5 - Добавление книги\n0 - Выход");
 

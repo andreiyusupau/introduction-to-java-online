@@ -10,39 +10,37 @@ import java.util.List;
 
 public class FileBookDAO implements BookDAO {
     private final String fileName = "bookList.txt";
+    private File file = new File(fileName);
 
-
+    @Override
     public void create(Book book) {
-        try {
-            File file;
-            file = new File(fileName);
 
-            if (!file.exists()) {
+        if (!file.exists()) {
+            try {
                 file.createNewFile();
+            } catch (IOException ioe) {
+                System.err.println("Не удалось создать новый файл");
             }
+        }
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file, true))) {
 
             String bookStr;
             bookStr = book.toString();
 
-            BufferedWriter bw;
-            bw = new BufferedWriter(new FileWriter(file, true));
             if (file.length() > 0) {
                 bw.newLine();
             }
             bw.write(bookStr);
-
-            bw.close();
         } catch (IOException io) {
             System.err.println("Ошибка при записи в файл");
         }
     }
 
+    @Override
     public Book read(int bookId) throws NullPointerException {
-        try {
-            File file;
-            file = new File(fileName);
-            BufferedReader br;
-            br = new BufferedReader(new FileReader(file));
+        try (BufferedReader br
+                     = new BufferedReader(new FileReader(file))) {
             int counter = 0;
             String currLine;
             while ((currLine = br.readLine()) != null && counter < bookId) {
@@ -51,7 +49,6 @@ public class FileBookDAO implements BookDAO {
             }
             String[] bookDetails;
             bookDetails = currLine.trim().split("/");
-            br.close();
             return initBook(bookDetails);
         } catch (FileNotFoundException fnfe) {
             System.err.println("Файл не найден");
@@ -61,13 +58,11 @@ public class FileBookDAO implements BookDAO {
         return null;
     }
 
+    @Override
     public List<Book> readAll() {
         List<Book> books = new ArrayList<>();
-        try {
-            File file = new File(fileName);
-            BufferedReader br;
-            br = new BufferedReader(new FileReader(file));
-
+        try (BufferedReader br
+                     = new BufferedReader(new FileReader(file))) {
             String currLine;
             while ((currLine = br.readLine()) != null) {
                 Book book;
@@ -76,8 +71,6 @@ public class FileBookDAO implements BookDAO {
                 book = initBook(bookDetails);
                 books.add(book);
             }
-            br.close();
-
         } catch (FileNotFoundException fnfe) {
             System.err.println("Файл не найден");
         } catch (IOException io) {
@@ -90,7 +83,6 @@ public class FileBookDAO implements BookDAO {
 
         String type;
         type = bookDetails[0];
-
         String name;
         name = bookDetails[1];
         String author;
@@ -111,12 +103,11 @@ public class FileBookDAO implements BookDAO {
         }
     }
 
+    @Override
     public List<Book> readPage(int page, int booksPerPage) {
-        try {
+        try (BufferedReader br
+                     = new BufferedReader(new FileReader(file))) {
             ArrayList<Book> pageOfBooks = new ArrayList<>();
-            File file = new File(fileName);
-            BufferedReader br;
-            br = new BufferedReader(new FileReader(file));
             int firstBook;
             firstBook = (page - 1) * booksPerPage;
             int lastBook;
@@ -131,7 +122,6 @@ public class FileBookDAO implements BookDAO {
                 }
                 counter++;
             }
-            br.close();
             return (pageOfBooks.size() == 0 && page > 1) ? readPage(page - 1, booksPerPage) : pageOfBooks;
         } catch (FileNotFoundException fnfe) {
             System.err.println("Файл не найден");
@@ -142,19 +132,16 @@ public class FileBookDAO implements BookDAO {
         return null;
     }
 
+    @Override
     public void update(int bookId, Book book) {
-        try {
-            File file;
-            file = new File(fileName);
-            BufferedReader br;
-            br = new BufferedReader(new FileReader(file));
-
+        File tempFile;
+        tempFile = new File("temp.txt");
+        try (BufferedReader br
+                     = new BufferedReader(new FileReader(file));
+             BufferedWriter bw
+                     = new BufferedWriter(new FileWriter(tempFile))) {
             String currLine;
             int counter = 0;
-            File tempFile;
-            tempFile = new File("temp.txt");
-            BufferedWriter bw;
-            bw = new BufferedWriter(new FileWriter(tempFile));
             while ((currLine = br.readLine()) != null) {
                 if (counter > 0) {
                     bw.newLine();
@@ -166,9 +153,6 @@ public class FileBookDAO implements BookDAO {
                 }
                 counter++;
             }
-            bw.close();
-            br.close();
-
             if (!file.delete()) {
                 System.out.println("Невозможно удалить исходный файл");
             } else if (!tempFile.renameTo(file)) {
@@ -181,19 +165,16 @@ public class FileBookDAO implements BookDAO {
         }
     }
 
+    @Override
     public void delete(int bookId) {
-        try {
-            File file;
-            file = new File(fileName);
-            BufferedReader br;
-            br = new BufferedReader(new FileReader(file));
-
+        File tempFile;
+        tempFile = new File("temp.txt");
+        try (BufferedReader br
+                     = new BufferedReader(new FileReader(file));
+             BufferedWriter bw
+                     = new BufferedWriter(new FileWriter(tempFile))) {
             String currLine;
             int counter = 0;
-            File tempFile;
-            tempFile = new File("temp.txt");
-            BufferedWriter bw;
-            bw = new BufferedWriter(new FileWriter(tempFile));
             while ((currLine = br.readLine()) != null) {
                 if (counter != bookId) {
                     if (counter > 0 && !(counter == 1 && bookId == 0)) {
@@ -203,9 +184,6 @@ public class FileBookDAO implements BookDAO {
                 }
                 counter++;
             }
-            bw.close();
-            br.close();
-
             if (!file.delete()) {
                 System.out.println("Невозможно удалить исходный файл");
             } else if (!tempFile.renameTo(file)) {
@@ -218,25 +196,22 @@ public class FileBookDAO implements BookDAO {
         }
     }
 
-    public List<Book> searchByName(String name){
+    @Override
+    public List<Book> searchByName(String name) {
         List<Book> books = new ArrayList<>();
-        try {
-            File file = new File(fileName);
-            BufferedReader br;
-            br = new BufferedReader(new FileReader(file));
-
+        try (BufferedReader br
+                     = new BufferedReader(new FileReader(file))) {
             String currLine;
             while ((currLine = br.readLine()) != null) {
 
                 String[] bookDetails;
                 bookDetails = currLine.trim().split("/");
-                if(bookDetails[0].equals(name)){
+                if (bookDetails[0].equals(name)) {
                     Book book;
-                book = initBook(bookDetails);
-                books.add(book);
+                    book = initBook(bookDetails);
+                    books.add(book);
                 }
             }
-            br.close();
         } catch (FileNotFoundException fnfe) {
             System.err.println("Файл не найден");
         } catch (IOException io) {
@@ -245,26 +220,23 @@ public class FileBookDAO implements BookDAO {
         return books;
     }
 
-
-    public List<Book> searchByAuthor(String author){
+    @Override
+    public List<Book> searchByAuthor(String author) {
         List<Book> books = new ArrayList<>();
-        try {
-            File file = new File(fileName);
-            BufferedReader br;
-            br = new BufferedReader(new FileReader(file));
+        try (BufferedReader br
+                     = new BufferedReader(new FileReader(file))) {
 
             String currLine;
             while ((currLine = br.readLine()) != null) {
 
                 String[] bookDetails;
                 bookDetails = currLine.trim().split("/");
-                if(bookDetails[1].equals(author)){
+                if (bookDetails[1].equals(author)) {
                     Book book;
                     book = initBook(bookDetails);
                     books.add(book);
                 }
             }
-            br.close();
         } catch (FileNotFoundException fnfe) {
             System.err.println("Файл не найден");
         } catch (IOException io) {
