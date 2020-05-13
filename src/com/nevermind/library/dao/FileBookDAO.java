@@ -5,9 +5,6 @@ import com.nevermind.library.model.book.EBook;
 import com.nevermind.library.model.book.PaperBook;
 
 import java.io.*;
-import java.nio.file.CopyOption;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +15,7 @@ public class FileBookDAO implements BookDAO {
     public void create(Book book) {
         try {
             File file;
-            file= new File(fileName);
+            file = new File(fileName);
 
             if (!file.exists()) {
                 file.createNewFile();
@@ -27,9 +24,9 @@ public class FileBookDAO implements BookDAO {
             String bookStr;
             bookStr = book.toString();
 
-            BufferedWriter bw ;
-            bw= new BufferedWriter(new FileWriter(file, true));
-            if(file.length()>0){
+            BufferedWriter bw;
+            bw = new BufferedWriter(new FileWriter(file, true));
+            if (file.length() > 0) {
                 bw.newLine();
             }
             bw.write(bookStr);
@@ -43,7 +40,7 @@ public class FileBookDAO implements BookDAO {
     public Book read(int bookId) throws NullPointerException {
         try {
             File file;
-            file= new File(fileName);
+            file = new File(fileName);
             BufferedReader br;
             br = new BufferedReader(new FileReader(file));
             int counter = 0;
@@ -65,8 +62,8 @@ public class FileBookDAO implements BookDAO {
     }
 
     public List<Book> readAll() {
+        List<Book> books = new ArrayList<>();
         try {
-            List<Book> books = new ArrayList<>();
             File file = new File(fileName);
             BufferedReader br;
             br = new BufferedReader(new FileReader(file));
@@ -80,13 +77,13 @@ public class FileBookDAO implements BookDAO {
                 books.add(book);
             }
             br.close();
-            return books;
+
         } catch (FileNotFoundException fnfe) {
             System.err.println("Файл не найден");
         } catch (IOException io) {
             System.err.println("Проблема чтения из файла");
         }
-        return new ArrayList<>();
+        return books;
     }
 
     public Book initBook(String[] bookDetails) {
@@ -159,7 +156,7 @@ public class FileBookDAO implements BookDAO {
             BufferedWriter bw;
             bw = new BufferedWriter(new FileWriter(tempFile));
             while ((currLine = br.readLine()) != null) {
-                if(counter>0){
+                if (counter > 0) {
                     bw.newLine();
                 }
                 if (counter == bookId) {
@@ -169,7 +166,7 @@ public class FileBookDAO implements BookDAO {
                 }
                 counter++;
             }
-bw.close();
+            bw.close();
             br.close();
 
             if (!file.delete()) {
@@ -199,18 +196,17 @@ bw.close();
             bw = new BufferedWriter(new FileWriter(tempFile));
             while ((currLine = br.readLine()) != null) {
                 if (counter != bookId) {
-                    if(counter>0&&!(counter==1&&bookId==0)){
+                    if (counter > 0 && !(counter == 1 && bookId == 0)) {
                         bw.newLine();
                     }
                     bw.write(currLine);
                 }
                 counter++;
             }
-bw.close();
+            bw.close();
             br.close();
 
-
-         if (!file.delete()) {
+            if (!file.delete()) {
                 System.out.println("Невозможно удалить исходный файл");
             } else if (!tempFile.renameTo(file)) {
                 System.out.println("Невозможно переименовать файл");
@@ -220,5 +216,60 @@ bw.close();
         } catch (IOException ioe) {
             System.err.println("Проблема чтения из файла");
         }
+    }
+
+    public List<Book> searchByName(String name){
+        List<Book> books = new ArrayList<>();
+        try {
+            File file = new File(fileName);
+            BufferedReader br;
+            br = new BufferedReader(new FileReader(file));
+
+            String currLine;
+            while ((currLine = br.readLine()) != null) {
+
+                String[] bookDetails;
+                bookDetails = currLine.trim().split("/");
+                if(bookDetails[0].equals(name)){
+                    Book book;
+                book = initBook(bookDetails);
+                books.add(book);
+                }
+            }
+            br.close();
+        } catch (FileNotFoundException fnfe) {
+            System.err.println("Файл не найден");
+        } catch (IOException io) {
+            System.err.println("Проблема чтения из файла");
+        }
+        return books;
+    }
+
+
+    public List<Book> searchByAuthor(String author){
+        List<Book> books = new ArrayList<>();
+        try {
+            File file = new File(fileName);
+            BufferedReader br;
+            br = new BufferedReader(new FileReader(file));
+
+            String currLine;
+            while ((currLine = br.readLine()) != null) {
+
+                String[] bookDetails;
+                bookDetails = currLine.trim().split("/");
+                if(bookDetails[1].equals(author)){
+                    Book book;
+                    book = initBook(bookDetails);
+                    books.add(book);
+                }
+            }
+            br.close();
+        } catch (FileNotFoundException fnfe) {
+            System.err.println("Файл не найден");
+        } catch (IOException io) {
+            System.err.println("Проблема чтения из файла");
+        }
+        return books;
     }
 }
