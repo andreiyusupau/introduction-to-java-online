@@ -2,10 +2,7 @@ package com.nevermind.library.util;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
+import javax.mail.*;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -108,11 +105,23 @@ public class UserUtil {
         return email != null && pat.matcher(email).matches();
     }
 
-
+    //TODO:change from and password
     public static void sendMail(String from, ArrayList<String> to, String subject, String content) {
         Properties props = new Properties();
-        Session session = Session.getDefaultInstance(props, null);
-
+        String host = "smtp.gmail.com";
+        String password = "";//Add
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", host);
+        props.put("mail.smtp.user", from);
+        props.put("mail.smtp.password", password);
+        props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.auth", "true");
+        Session session = Session.getInstance(props,
+                new javax.mail.Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(from, password);
+                    }
+                });
         try {
             Message msg = new MimeMessage(session);
             msg.setFrom(new InternetAddress(from));
@@ -126,7 +135,7 @@ public class UserUtil {
         } catch (AddressException e) {
             System.err.println("Неверный email адрес");
         } catch (MessagingException e) {
-            System.err.println("Ошибка при отпарвке сообщения");
+            System.err.println("Ошибка при отправке сообщения");
         }
     }
 

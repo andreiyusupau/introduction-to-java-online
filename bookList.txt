@@ -4,3 +4,8 @@
 Бумажная книга/0/fsafs/afsfas/affas/1234/false
 Бумажная книга/0/fsafs/afsfas/affas/1234/false
 Бумажная книга/0/fsafs/afsfas/affas/1234/false
+Электронная книга/0/First/Test/testing/1998/.fb2
+Электронная книга/0/das/asd/asd/1234/.xfa
+Бумажная книга/0/fsd/fsd/sdf/1234/false
+Бумажная книга/0/fsd/fsd/sfd/123/false
+Бумажная книга/0/fsd/fsd/sfd/123/false
