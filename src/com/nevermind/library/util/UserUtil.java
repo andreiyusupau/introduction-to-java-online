@@ -105,11 +105,14 @@ public class UserUtil {
         return email != null && pat.matcher(email).matches();
     }
 
-    //TODO:change from and password
-    public static void sendMail(String from, ArrayList<String> to, String subject, String content) {
+    //Протестировал со своей почты - все работает.
+    //для работы с gmail понадобилось открыть доступ небезопасным приложениям.
+    // Для реального приложения потребуется почта библиотеки напоодобие library@gmail.com, которая будет отправлять все уведомления
+    public static void sendMail(ArrayList<String> to, String subject, String content) {
         Properties props = new Properties();
         String host = "smtp.gmail.com";
-        String password = "";//Add
+        String from = "library@gmail.com";
+        String password = "password";//Add
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.host", host);
         props.put("mail.smtp.user", from);

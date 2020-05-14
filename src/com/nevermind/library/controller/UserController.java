@@ -82,7 +82,7 @@ public class UserController {
             emailList.add(user.getEmail());
         }
         if (emailList.size() > 0) {
-            UserUtil.sendMail(currentUser.getEmail(), emailList, "В библиотеку добавлена книга", text);
+            UserUtil.sendMail(emailList, "В библиотеку добавлена книга", text);
         } else {
             System.err.println("В списке нет пользователей");
         }
@@ -95,7 +95,7 @@ public class UserController {
             emailList.add(admin.getEmail());
         }
         if (emailList.size() > 0) {
-            UserUtil.sendMail(currentUser.getEmail(), emailList, "Предложение добавить книгу", text);
+            UserUtil.sendMail(emailList, "Предложение добавить книгу", text);
         } else {
             System.err.println("В списке нет администраторов");
         }
