@@ -6,6 +6,18 @@ import com.nevermind.library.model.role.User;
 import com.nevermind.library.util.UserUtil;
 import com.nevermind.library.view.Menu;
 
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Properties;
+
+
 public class UserController {
 
     private UserDAO userDAO;
@@ -65,64 +77,28 @@ public class UserController {
     }
 
     public void notifyUsers(String text) {
+        ArrayList<String> emailList = new ArrayList<>();
+        for (User user : userDAO.readUsers()) {
+            emailList.add(user.getEmail());
+        }
+        if (emailList.size() > 0) {
+            UserUtil.sendMail(currentUser.getEmail(), emailList, "В библиотеку добавлена книга", text);
+        } else {
+            System.err.println("В списке нет пользователей");
+        }
 
     }
 
     public void notifyAdmins(String text) {
-
+        ArrayList<String> emailList = new ArrayList<>();
+        for (User admin : userDAO.readAdmins()) {
+            emailList.add(admin.getEmail());
+        }
+        if (emailList.size() > 0) {
+            UserUtil.sendMail(currentUser.getEmail(), emailList, "Предложение добавить книгу", text);
+        } else {
+            System.err.println("В списке нет администраторов");
+        }
     }
 
-
-    private void sendMail() {
-   /*public class SendEmail
-{
-
-   public static void main(String [] args)
-   {
-      // email ID of Recipient.
-      String recipient = "recipient@gmail.com";
-
-      // email ID of  Sender.
-      String sender = "sender@gmail.com";
-
-      // using host as localhost
-      String host = "127.0.0.1";
-
-      // Getting system properties
-      Properties properties = System.getProperties();
-
-      // Setting up mail server
-      properties.setProperty("mail.smtp.host", host);
-
-      // creating session object to get properties
-      Session session = Session.getDefaultInstance(properties);
-
-      try
-      {
-         // MimeMessage object.
-         MimeMessage message = new MimeMessage(session);
-
-         // Set From Field: adding senders email to from field.
-         message.setFrom(new InternetAddress(sender));
-
-         // Set To Field: adding recipient's email to from field.
-         message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
-
-         // Set Subject: subject of the email
-         message.setSubject("This is Suject");
-
-         // set body of the email.
-         message.setText("This is a test mail");
-
-         // Send email.
-         Transport.send(message);
-         System.out.println("Mail successfully sent");
-      }
-      catch (MessagingException mex)
-      {
-         mex.printStackTrace();
-      }
-   }
-} */
-    }
 }

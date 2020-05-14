@@ -2,10 +2,19 @@ package com.nevermind.library.util;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
+import java.util.ArrayList;
+import java.util.Properties;
 import java.util.regex.Pattern;
 
 public class UserUtil {
@@ -98,4 +107,27 @@ public class UserUtil {
 
         return email != null && pat.matcher(email).matches();
     }
+
+
+    public static void sendMail(String from, ArrayList<String> to, String subject, String content) {
+        Properties props = new Properties();
+        Session session = Session.getDefaultInstance(props, null);
+
+        try {
+            Message msg = new MimeMessage(session);
+            msg.setFrom(new InternetAddress(from));
+            for (String recipient : to) {
+                msg.addRecipient(Message.RecipientType.TO,
+                        new InternetAddress(recipient));
+            }
+            msg.setSubject(subject);
+            msg.setText(content);
+            Transport.send(msg);
+        } catch (AddressException e) {
+            System.err.println("Неверный email адрес");
+        } catch (MessagingException e) {
+            System.err.println("Ошибка при отпарвке сообщения");
+        }
+    }
+
 }
