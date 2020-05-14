@@ -29,13 +29,9 @@ public class BookController {
         return bookDAO.create(new EBook(name, author, publisher, yearOfPublishing, format));
     }
 
-    public void recommendBook(String name, String author, String publisher, int yearOfPublishing, boolean hardCover) {
+    public void refresh() {
 
     }
-
-    public void recommendBook(String name, String author, String publisher, int yearOfPublishing, String format) {
-    }
-
 
     public void deleteBook(int bookId) {
         bookDAO.delete(bookId);

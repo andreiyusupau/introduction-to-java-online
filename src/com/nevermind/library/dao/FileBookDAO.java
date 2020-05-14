@@ -11,14 +11,15 @@ import java.util.List;
 public class FileBookDAO implements BookDAO {
     private final String fileName = "bookList.txt";
     private File file = new File(fileName);
-    private static int currentId;
+    private int currentId;
 
     public FileBookDAO() {
         ArrayList<Book> books = (ArrayList<Book>) readAll();
         if (books.size() > 0) {
-            currentId = books.get(books.size() - 1).getId();
+            currentId = books.get(books.size() - 1).getId() + 1;
         } else {
             currentId = 0;
+
         }
     }
 
@@ -93,11 +94,11 @@ public class FileBookDAO implements BookDAO {
     }
 
     public Book initBook(String[] bookDetails) {
-
+        Book book;
         String type;
         type = bookDetails[0];
         int id;
-        id = Integer.valueOf(bookDetails[1]);
+        id = Integer.parseInt(bookDetails[1]);
         String name;
         name = bookDetails[2];
         String author;
@@ -110,12 +111,14 @@ public class FileBookDAO implements BookDAO {
         if (type.equals("Бумажная книга")) {
             boolean hardCover;
             hardCover = bookDetails[6].equals("true");
-            return new PaperBook(name, author, publisher, yearOfPublishing, hardCover);
+            book = new PaperBook(name, author, publisher, yearOfPublishing, hardCover);
         } else {
             String format;
             format = bookDetails[6];
-            return new EBook(name, author, publisher, yearOfPublishing, format);
+            book = new EBook(name, author, publisher, yearOfPublishing, format);
         }
+        book.setId(id);
+        return book;
     }
 
     @Override

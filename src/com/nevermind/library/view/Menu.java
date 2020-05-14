@@ -107,6 +107,7 @@ public class Menu {
                     } else {
                         recommendBookMenu();
                     }
+                    catalogue(1, bc.getPage(1));
                 }
                 case 0 -> work = false; //выход из программы
             }
