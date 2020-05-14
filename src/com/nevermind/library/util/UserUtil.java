@@ -1,40 +1,101 @@
 package com.nevermind.library.util;
 
-import com.nevermind.library.model.role.User;
-
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
 import java.util.regex.Pattern;
 
 public class UserUtil {
 
-    public static byte[] hashPass(String pass) {
+
+    //https://howtodoinjava.com/security/how-to-generate-secure-password-hash-md5-sha-pbkdf2-bcrypt-examples/
+    public static String generatePasswordHash(String password) {
+        int iterations;
+        iterations = 1000;
+        char[] chars;
+        chars = password.toCharArray();
         try {
-            SecureRandom random = new SecureRandom();
-            byte[] salt = new byte[16];
-            random.nextBytes(salt);
-            KeySpec spec = new PBEKeySpec(pass.toCharArray(), salt, 65536, 128);
-            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-            return factory.generateSecret(spec).getEncoded();
-        } catch (NoSuchAlgorithmException nsae) {
-            System.err.println("Заданный алгоритм шифрования не существует");
-        } catch (InvalidKeySpecException ikse) {
-            System.err.println("Неверные входные параметры шифрования");
+            byte[] salt;
+            salt = getSalt();
+            PBEKeySpec spec;
+            spec = new PBEKeySpec(chars, salt, iterations, 64 * 8);
+            SecretKeyFactory skf;
+            skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+            byte[] hash;
+            hash = skf.generateSecret(spec).getEncoded();
+
+            return iterations + ":" + toHex(salt) + ":" + toHex(hash);
+        } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
+            System.err.println("Задан неверный алгоритм хеширования");
         }
         return null;
     }
 
+    private static byte[] getSalt() throws NoSuchAlgorithmException {
+        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+        byte[] salt = new byte[16];
+        sr.nextBytes(salt);
+        return salt;
+    }
+
+    public static boolean validatePassword(String originalPassword, String storedPassword) {
+        String[] parts;
+        parts = storedPassword.split(":");
+        int iterations;
+        iterations = Integer.parseInt(parts[0]);
+        byte[] salt;
+        salt = fromHex(parts[1]);
+        byte[] hash;
+        hash = fromHex(parts[2]);
+        try {
+            PBEKeySpec spec;
+            spec = new PBEKeySpec(originalPassword.toCharArray(), salt, iterations, hash.length * 8);
+            SecretKeyFactory skf;
+            skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+            byte[] testHash;
+            testHash = skf.generateSecret(spec).getEncoded();
+
+            int diff;
+            diff = hash.length ^ testHash.length;
+            for (int i = 0; i < hash.length && i < testHash.length; i++) {
+                diff |= hash[i] ^ testHash[i];
+            }
+            return diff == 0;
+        } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
+            System.err.println("Задан неверный алгоритм хеширования");
+        }
+        return false;
+    }
+
+    private static byte[] fromHex(String hex) {
+        byte[] bytes = new byte[hex.length() / 2];
+        for (int i = 0; i < bytes.length; i++) {
+            bytes[i] = (byte) Integer.parseInt(hex.substring(2 * i, 2 * i + 2), 16);
+        }
+        return bytes;
+    }
+
+    private static String toHex(byte[] array) {
+        BigInteger bi = new BigInteger(1, array);
+        String hex = bi.toString(16);
+        int paddingLength = (array.length * 2) - hex.length();
+        if (paddingLength > 0) {
+            return String.format("%0" + paddingLength + "d", 0) + hex;
+        } else {
+            return hex;
+        }
+    }
+
+    //https://howtodoinjava.com/regex/java-regex-validate-email-address/
     public static boolean isEmailValid(String email) {
-        String emailRegex = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$";
+        String emailRegex = "^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
 
         Pattern pat;
         pat = Pattern.compile(emailRegex);
 
         return email != null && pat.matcher(email).matches();
-
     }
 }

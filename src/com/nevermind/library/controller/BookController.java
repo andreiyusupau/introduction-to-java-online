@@ -74,12 +74,20 @@ public class BookController {
     }
 
     public void previousPage(int page) {
-        menu.catalogue(page - 1, getPage(page - 1));
+        if (page > 1) {
+            menu.catalogue(page - 1, getPage(page - 1));
+        }
     }
 
     public void nextPage(int page) {
-        menu.catalogue(page + 1, getPage(page + 1));
+        if (pageCount() > page) {
+            menu.catalogue(page + 1, getPage(page + 1));
+        }
     }
 
-
+    public int pageCount() {
+        int pages;
+        pages = bookDAO.readAll().size();
+        return pages != 0 ? pages / booksPerPage + 1 : 0;
+    }
 }

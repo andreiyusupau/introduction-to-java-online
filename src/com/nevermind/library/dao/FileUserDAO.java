@@ -3,7 +3,6 @@ package com.nevermind.library.dao;
 import com.nevermind.library.model.role.User;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class FileUserDAO implements UserDAO {
@@ -35,17 +34,17 @@ private final String fileName="users.txt";
   }
 
   @Override
-  public User read(String email, byte[] hashedPassword) throws NullPointerException{
+  public User read(String email) throws NullPointerException {
 
-    try(BufferedReader br
-         = new BufferedReader(new FileReader(file))) {
+    try (BufferedReader br
+                 = new BufferedReader(new FileReader(file))) {
       String currLine;
       while ((currLine = br.readLine()) != null) {
         String[] userDetails;
         userDetails = currLine.trim().split("/");
-        if(userDetails[3].equals(email)&& Arrays.equals(userDetails[4].getBytes(),hashedPassword)){
-return new User(userDetails[0],userDetails[1],userDetails[2],
-        userDetails[3],userDetails[4].getBytes(),userDetails[5].equals("true"));
+        if (userDetails[3].equals(email)) {
+          return new User(userDetails[0], userDetails[1], userDetails[2],
+                  userDetails[3], userDetails[4], userDetails[5].equals("true"));
         }
       }
     } catch (FileNotFoundException fnfe) {
@@ -104,7 +103,7 @@ return new User(userDetails[0],userDetails[1],userDetails[2],
   public User initUser(String[] userDetails) {
 
     String firstName;
-    firstName= userDetails[0];
+    firstName = userDetails[0];
 
     String middleName;
     middleName = userDetails[1];
@@ -112,12 +111,12 @@ return new User(userDetails[0],userDetails[1],userDetails[2],
     lastName = userDetails[2];
     String email;
     email = userDetails[3];
-    byte[] hashedPassword;
-    hashedPassword = userDetails[4].getBytes();
+    String hashedPassword;
+    hashedPassword = userDetails[4];
     boolean isAdmin;
-    isAdmin=userDetails[5].equals("true");
+    isAdmin = userDetails[5].equals("true");
 
-      return new User(firstName,middleName,lastName,email,hashedPassword,isAdmin);
+    return new User(firstName, middleName, lastName, email, hashedPassword, isAdmin);
   }
 
 

@@ -1,6 +1,5 @@
 package com.nevermind.library.dao;
 
-import com.nevermind.library.controller.BookController;
 import com.nevermind.library.model.book.Book;
 import com.nevermind.library.model.book.EBook;
 import com.nevermind.library.model.book.PaperBook;
@@ -16,7 +15,11 @@ public class FileBookDAO implements BookDAO {
 
     public FileBookDAO() {
         ArrayList<Book> books = (ArrayList<Book>) readAll();
-        currentId = books.get(books.size() - 1).getId();
+        if (books.size() > 0) {
+            currentId = books.get(books.size() - 1).getId();
+        } else {
+            currentId = 0;
+        }
     }
 
     @Override
@@ -55,7 +58,6 @@ public class FileBookDAO implements BookDAO {
             int counter = 0;
             String currLine;
             while ((currLine = br.readLine()) != null && counter < bookId) {
-                // br.readLine();
                 counter++;
             }
             String[] bookDetails;
@@ -94,22 +96,24 @@ public class FileBookDAO implements BookDAO {
 
         String type;
         type = bookDetails[0];
+        int id;
+        id = Integer.valueOf(bookDetails[1]);
         String name;
-        name = bookDetails[1];
+        name = bookDetails[2];
         String author;
-        author = bookDetails[2];
+        author = bookDetails[3];
         String publisher;
-        publisher = bookDetails[3];
+        publisher = bookDetails[4];
         int yearOfPublishing;
-        yearOfPublishing = Integer.parseInt(bookDetails[4]);
+        yearOfPublishing = Integer.parseInt(bookDetails[5]);
 
         if (type.equals("Бумажная книга")) {
             boolean hardCover;
-            hardCover = bookDetails[5].equals("true");
+            hardCover = bookDetails[6].equals("true");
             return new PaperBook(name, author, publisher, yearOfPublishing, hardCover);
         } else {
             String format;
-            format = bookDetails[5];
+            format = bookDetails[6];
             return new EBook(name, author, publisher, yearOfPublishing, format);
         }
     }
@@ -219,7 +223,7 @@ public class FileBookDAO implements BookDAO {
 
                 String[] bookDetails;
                 bookDetails = currLine.trim().split("/");
-                if (bookDetails[0].toLowerCase().equals(nameLC)) {
+                if (bookDetails[2].toLowerCase().contains(nameLC)) {
                     Book book;
                     book = initBook(bookDetails);
                     books.add(book);
@@ -246,7 +250,7 @@ public class FileBookDAO implements BookDAO {
 
                 String[] bookDetails;
                 bookDetails = currLine.trim().split("/");
-                if (bookDetails[1].toLowerCase().equals(authorLC)) {
+                if (bookDetails[3].toLowerCase().contains(authorLC)) {
                     Book book;
                     book = initBook(bookDetails);
                     books.add(book);

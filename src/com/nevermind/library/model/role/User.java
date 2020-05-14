@@ -6,16 +6,16 @@ public class User {
     private String middleName;
     private String lastName;
     private String email;
-    private byte[] hashedPassword;
+    private String hashedPassword;
     private boolean isAdmin;
 
-    public User(String firstName, String middleName, String lastName, String email, byte[] hashedPassword,boolean isAdmin) {
+    public User(String firstName, String middleName, String lastName, String email, String hashedPassword, boolean isAdmin) {
         this.firstName = firstName;
         this.middleName = middleName;
         this.lastName = lastName;
         this.email = email;
         this.hashedPassword = hashedPassword;
-        this.isAdmin=isAdmin;
+        this.isAdmin = isAdmin;
     }
 
     @Override
@@ -27,7 +27,7 @@ public class User {
         return email;
     }
 
-    public byte[] getHashedPassword() {
+    public String getHashedPassword() {
         return hashedPassword;
     }
 

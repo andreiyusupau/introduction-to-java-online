@@ -8,7 +8,7 @@ public interface UserDAO {
 
     void create(User user);
 
-    User read(String email, byte[] hashedPassword);
+    User read(String email);
 
     List<User> readUsers();
 

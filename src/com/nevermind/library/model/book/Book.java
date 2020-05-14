@@ -40,6 +40,6 @@ public abstract class Book {
 
     @Override
     public String toString() {
-        return name + "/" + author + "/" + publisher + "/" + yearOfPublishing + "/";
+        return id + "/" + name + "/" + author + "/" + publisher + "/" + yearOfPublishing + "/";
     }
 }

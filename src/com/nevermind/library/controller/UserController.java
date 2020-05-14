@@ -1,6 +1,5 @@
 package com.nevermind.library.controller;
 
-import com.nevermind.library.dao.FileBookDAO;
 import com.nevermind.library.dao.FileUserDAO;
 import com.nevermind.library.dao.UserDAO;
 import com.nevermind.library.model.role.User;
@@ -19,22 +18,37 @@ public class UserController {
     }
 
     public boolean login(String email, String password) {
-        byte[] hashedPassword;
-        hashedPassword = UserUtil.hashPass(password);
-        currentUser = userDAO.read(email, hashedPassword);
-        hashedPassword = null;
-        return currentUser != null;
+        User user;
+        user = userDAO.read(email);
+        if (user != null) {
+            if (UserUtil.validatePassword(password, String.valueOf(user.getHashedPassword()))) {
+                currentUser = user;
+                return true;
+            } else {
+                System.err.println("Введен неверный пароль");
+                return false;
+            }
+        } else {
+            System.err.println("Пользователь с таким email не найден");
+            return false;
+        }
     }
 
     public void register(String firstName, String middleName, String lastName, String email, String password) {
-        if (!(firstName.contains("/") || middleName.contains("/") || lastName.contains("/") || email.contains("/") || password.contains("/"))) {
+        if (!(firstName.contains("/") || middleName.contains("/") || lastName.contains("/")
+                || email.contains("/") || password.contains("/"))) {
             if (UserUtil.isEmailValid(email)) {
-                byte[] hashedPassword;
-                hashedPassword = UserUtil.hashPass(password);
-                userDAO.create(new User(firstName, middleName, lastName, email, hashedPassword, false));
-                hashedPassword = null;
-                System.out.println("Пользователь успешно добавлен.");
-                menu.loginForm();
+                String hashedPassword;
+                hashedPassword = UserUtil.generatePasswordHash(password);
+                if (hashedPassword != null) {
+                    userDAO.create(new User(firstName, middleName, lastName, email, hashedPassword, false));
+                    hashedPassword = null;
+                    System.out.println("Пользователь успешно добавлен.");
+                    menu.loginForm();
+                } else {
+                    System.err.println("Не удалось создать пароль");
+                    menu.enterMenu();
+                }
             } else {
                 System.err.println("Введенный email не соответствует шаблону");
                 menu.enterMenu();

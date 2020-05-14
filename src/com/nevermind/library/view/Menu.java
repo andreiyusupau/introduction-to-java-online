@@ -39,19 +39,20 @@ public class Menu {
     }
 
     public void loginForm() {
+        System.out.println("ВХОД");
         String email;
         String password;
         email = MenuUtil.readS("Введите email :");
-        password = MenuUtil.readPass("Введите пароль: ");
+        password = MenuUtil.readS("Введите пароль: ");
         if (uc.login(email, password)) {
-            System.err.println("Пользователь с таким email и паролем не найден");
-            enterMenu();
-        } else {
             catalogue(1, bc.getPage(1));
+        } else {
+            enterMenu();
         }
     }
 
     public void registerForm() {
+        System.out.println("РЕГИСТРАЦИЯ НОВОГО ПОЛЬЗОВАТЕЛЯ");
         String firstName;
         String middleName;
         String lastName;
@@ -64,9 +65,9 @@ public class Menu {
         lastName = MenuUtil.readS("Введите вашу фамилию :");
         email = MenuUtil.readS("Введите ваш email :");
         while (!password.equals(passwordRepeat)) {
-            password = MenuUtil.readPass("Введите пароль: ");
-            passwordRepeat = MenuUtil.readPass("Повторно введите пароль: ");
-        }
+            password = MenuUtil.readS("Введите пароль: ");
+            passwordRepeat = MenuUtil.readS("Повторно введите пароль: ");
+        } //TODO:рабочий ввод пароля с скорытием символов
         if (password != null) {
             uc.register(firstName, middleName, lastName, email, password);
         }
@@ -79,10 +80,15 @@ public class Menu {
         boolean work = true;
         while (work) {
             System.out.println("КАТАЛОГ КНИГ");
-            System.out.println("Страница " + page);
-            for (Book book : books) {
-                System.out.println(book.toString());
+            System.out.println("Страница " + page + " из " + bc.pageCount());
+            if (books != null && books.size() > 0) {
+                for (Book book : books) {
+                    System.out.println(book.toString());
+                }
+            } else {
+                System.out.println("Каталог пуст");
             }
+
             System.out.println("1 - Предыдущая страница\n2 - Следующая страница\n3 - Поиск книги\n" +
                     "4 - Информация о книге\n5 - Добавление книги\n0 - Выход");
 
@@ -114,16 +120,16 @@ public class Menu {
         if (isElectronic) {
             if (bc.addBook(MenuUtil.readS("Введите название книги :"),
                     MenuUtil.readS("Введите автора книги :"),
-                    MenuUtil.readS("Введите новое издательство книги :"),
-                    MenuUtil.readN("Введите новый год публикации книги :", 0, 2020),
+                    MenuUtil.readS("Введите издательство книги :"),
+                    MenuUtil.readN("Введите год публикации книги :", 0, 2020),
                     MenuUtil.readS("Введите формат электронной книги :"))) {
                 uc.notifyUsers("В библиотеку добавлена новая электронная книга");
             }
         } else {
             if (bc.addBook(MenuUtil.readS("Введите название книги :"),
                     MenuUtil.readS("Введите автора книги :"),
-                    MenuUtil.readS("Введите новое издательство книги :"),
-                    MenuUtil.readN("Введите новый год публикации книги :", 0, 2020),
+                    MenuUtil.readS("Введите издательство книги :"),
+                    MenuUtil.readN("Введите год публикации книги :", 0, 2020),
                     MenuUtil.readN("Введите тип переплета (1- твердый , 2 - мягкий): ", 1, 2) == 1)) {
                 uc.notifyUsers("В библиотеку добавлена новая бумажная книга");
             }
@@ -141,9 +147,9 @@ public class Menu {
         sb.append("\n");
         sb.append(MenuUtil.readS("Введите автора книги :"));
         sb.append("\n");
-        sb.append(MenuUtil.readS("Введите новое издательство книги :"));
+        sb.append(MenuUtil.readS("Введите издательство книги :"));
         sb.append("\n");
-        sb.append(MenuUtil.readN("Введите новый год публикации книги :", 0, 2020));
+        sb.append(MenuUtil.readN("Введите год публикации книги :", 0, 2020));
         sb.append("\n");
         if (isElectronic) {
             sb.append(MenuUtil.readS("Введите формат электронной книги :"));
@@ -158,17 +164,18 @@ public class Menu {
         boolean work = true;
         while (work) {
             System.out.println("ПОИСК КНИГ");
-            System.out.println("1 - Искать по названию\n2 - Искать по автору\n0 - Выход");
+            System.out.println("1 - Искать по названию\n2 - Искать по автору\n0 - Назад");
 
             int n;
             n = MenuUtil.readN("Ваши действия: ", 0, 2); //считываем выбор пользователя
 
             //переходим в определнную ветку программы или выходим из нее
             switch (n) {
-                case 1 -> bc.searchBookByName(MenuUtil.readS("Введите название книги: "));
-                case 2 -> bc.searchBookByAuthor(MenuUtil.readS("Введите автора книги: "));
+                case 1 -> System.out.println(bc.searchBookByName(MenuUtil.readS("Введите название книги: ")));
+                case 2 -> System.out.println(bc.searchBookByAuthor(MenuUtil.readS("Введите автора книги: ")));
                 case 0 -> work = false; //выход из программы
             }
+
         }
     }
 
