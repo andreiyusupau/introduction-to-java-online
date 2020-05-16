@@ -1,7 +1,8 @@
-package com.nevermind.notepad.model.dao;
+package com.nevermind.notepad.dao;
 
 import com.nevermind.notepad.model.Note;
 import com.nevermind.notepad.model.specs.NoteSpecification;
+import com.nevermind.notepad.util.Util;
 
 import java.io.*;
 import java.time.LocalDate;
@@ -24,22 +25,16 @@ public class FileNotepadDAO implements NotepadDAO {
     @Override
     public boolean add(String title, String email, String message) {
 
-        if (verify(title, "^[A-Z].{0,19}") &&
-                verify(email, "^[\\w!#$%&’*+/=?`{|}~^-]+(?:\\.[\\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$") &&
-                verify(message, ".{5,200}") &&
-                !verify(message, "\\n|\\r|\\f|\\u0085|\\u2029")) {
+        if (Util.verify(title, "^[A-Z].{0,19}") &&
+                Util.verify(email, "^[\\w!#$%&’*+/=?`{|}~^-]+(?:\\.[\\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$") &&
+                Util.verify(message, ".{5,200}") &&
+                !Util.verify(message, "\\n|\\r|\\f|\\u0085|\\u2029")) {
             return notes.add(new Note(title, LocalDate.now(), email, message));
         } else {
             System.err.println("Не удалось добавить заметку");
             return false;
         }
 
-    }
-
-    private boolean verify(String input, String pattern) {
-        System.out.println("input "+ input+" , pattern "+pattern);
-        System.out.println(Pattern.matches(pattern, input));
-        return Pattern.matches(pattern, input);
     }
 
     @Override
@@ -65,13 +60,14 @@ public class FileNotepadDAO implements NotepadDAO {
         ArrayList<Note> inputNotes = new ArrayList<>();
         try (BufferedReader br
                      = new BufferedReader(new FileReader(fileName))) {
-
-            while (br.readLine() != null) {
+            String currLine;
+            while ((currLine = br.readLine()) != null) {
                 Note note;
                 String[] noteDetails = new String[4];
-                for (int i = 0; i < noteDetails.length; i++) {
-                    noteDetails[i] = br.readLine();
-                }
+                noteDetails[0] = currLine;
+                noteDetails[1] = br.readLine();
+                noteDetails[2] = br.readLine();
+                noteDetails[3] = br.readLine();
                 note = initNote(noteDetails);
                 inputNotes.add(note);
             }
@@ -95,8 +91,14 @@ public class FileNotepadDAO implements NotepadDAO {
         }
 
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName))) {
+
+            boolean first = true;
             for (Note note : notes) {
-                bw.newLine();
+                if (first) {
+                    first = false;
+                } else {
+                    bw.newLine();
+                }
                 bw.write(note.getTitle());
                 bw.newLine();
                 bw.write(note.getDate().toString());

@@ -1,9 +1,9 @@
 package com.nevermind.notepad.controller;
 
 import com.nevermind.notepad.model.Note;
-import com.nevermind.notepad.model.dao.FileNotepadDAO;
+import com.nevermind.notepad.dao.FileNotepadDAO;
 import com.nevermind.notepad.model.specs.*;
-import com.nevermind.notepad.model.dao.NotepadDAO;
+import com.nevermind.notepad.dao.NotepadDAO;
 import com.nevermind.notepad.view.Notepad;
 
 import java.time.LocalDate;

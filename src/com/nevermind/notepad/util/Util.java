@@ -3,9 +3,14 @@ package com.nevermind.notepad.util;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.regex.Pattern;
 
 public class Util {
 
+
+    public static boolean verify(String input, String pattern) {
+        return Pattern.matches(pattern, input);
+    }
 
     //функция для ввода n с клавиатуры
     public static int readN(String question, int min, int max) {

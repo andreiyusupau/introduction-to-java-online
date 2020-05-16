@@ -2,12 +2,6 @@ package com.nevermind.notepad;
 
 import com.nevermind.notepad.controller.NotepadController;
 
-import javax.management.Query;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-
 /*Задание 2. Блокнот. Разработать консольное приложение, работающее с Заметками
         в Блокноте. Каждая Заметка это: Заметка (тема, дата создания, e-mail, сообщение).
         Общие пояснения к практическому заданию.
@@ -22,9 +16,11 @@ import java.util.Comparator;
         осуществлять с использованием регулярных выражений.
         • Особое условие: проверку введенной информации на валидность должен
         осуществлять код, непосредственно добавляющий информацию.*/
+
+//TODO:RegExp
 public class Main {
-    public static void main(String[] args){
-        NotepadController nc= new NotepadController();
-}
+    public static void main(String[] args) {
+        NotepadController nc = new NotepadController();
+    }
 
 }

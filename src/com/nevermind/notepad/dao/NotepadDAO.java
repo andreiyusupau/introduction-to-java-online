@@ -1,4 +1,4 @@
-package com.nevermind.notepad.model.dao;
+package com.nevermind.notepad.dao;
 
 import com.nevermind.notepad.model.Note;
 import com.nevermind.notepad.model.specs.NoteSpecification;
