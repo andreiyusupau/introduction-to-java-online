@@ -7,13 +7,9 @@ import java.util.List;
 
 public interface UserDAO {
 
-    void create(User user);
+    boolean create(User user);
 
-    User read(String email);
-
-    List<User> readUsers();
-
-   List<User> readAdmins();
+    boolean login(String email, String hashedPassword);
 
      void  update(User user);
 

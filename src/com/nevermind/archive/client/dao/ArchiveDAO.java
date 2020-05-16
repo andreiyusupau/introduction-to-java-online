@@ -1,10 +1,11 @@
 package com.nevermind.archive.client.dao;
 
 import java.util.List;
+import com.nevermind.archive.client.model.Record;
 
 public interface ArchiveDAO {
 
-    boolean create();
+    boolean create(Record record);
 
     Record read(long id);
 

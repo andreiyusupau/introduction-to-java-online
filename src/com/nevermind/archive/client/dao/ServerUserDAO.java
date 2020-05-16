@@ -1,128 +1,49 @@
 package com.nevermind.archive.client.dao;
 
-
+import com.nevermind.archive.Message;
+import com.nevermind.archive.client.ArchiveClient;
+import com.nevermind.archive.client.controller.UserController;
 import com.nevermind.archive.client.model.User;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
 
 public class ServerUserDAO implements UserDAO {
 
-private final String fileName="users.txt";
- private File file = new File(fileName);
+    private ArchiveClient client;
+    private UserController uc;
 
   @Override
-  public void create(User user){
-
-    if (!file.exists()) {
+  public boolean create(User user){
+      Message message;
+      message= new Message("REGISTER_USER",user,null,null);
+      Message answer=null;
       try {
-        file.createNewFile();
+          answer= client.communicate(message);
       } catch (IOException e) {
-        e.printStackTrace();
+          System.err.println("Ошибка при обработке файла");
+      } catch (ClassNotFoundException e) {
+          System.err.println("Класс не найден");
       }
-    }
-    try( BufferedWriter bw
-         = new BufferedWriter(new FileWriter(file, true))) {
-      String userStr;
-      userStr = user.toString();
-      if (file.length() > 0) {
-        bw.newLine();
-      }
-      bw.write(userStr);
-    } catch (IOException io) {
-      System.err.println("Ошибка при записи в файл");
-    }
+      return Boolean.parseBoolean(answer.getMessage());
   }
 
-  @Override
-  public User read(String email) throws NullPointerException {
-
-    try (BufferedReader br
-                 = new BufferedReader(new FileReader(file))) {
-      String currLine;
-      while ((currLine = br.readLine()) != null) {
-        String[] userDetails;
-        userDetails = currLine.trim().split("/");
-        if (userDetails[3].equals(email)) {
-          return new User(userDetails[0], userDetails[1], userDetails[2],
-                  userDetails[3], userDetails[4], userDetails[5].equals("true"));
+    @Override
+    public boolean login(String email, String hashedPassword) {
+        Message message;
+        message= new Message("LOGIN_USER",null,email,hashedPassword);
+        Message answer=null;
+        try {
+            answer= client.communicate(message);
+        } catch (IOException e) {
+            System.err.println("Ошибка при обработке файла");
+        } catch (ClassNotFoundException e) {
+            System.err.println("Класс не найден");
         }
-      }
-    } catch (FileNotFoundException fnfe) {
-      System.err.println("Файл не найден");
-    } catch (IOException io) {
-      System.err.println("Проблема чтения из файла");
+        return Boolean.parseBoolean(answer.getMessage());
     }
-    return null;
-  }
-
-  @Override
-  public List<User> readUsers() {
-    List<User> users = new ArrayList<>();
-    try(BufferedReader br
-         = new BufferedReader(new FileReader(file))) {
-      String currLine;
-      while ((currLine = br.readLine()) != null) {
-        User user;
-        String[] userDetails;
-        userDetails = currLine.trim().split("/");
-        user = initUser(userDetails);
-        users.add(user);
-      }
-    } catch (FileNotFoundException fnfe) {
-      System.err.println("Файл не найден");
-    } catch (IOException io) {
-      System.err.println("Проблема чтения из файла");
-    }
-    return users;
-  }
-
-  @Override
-  public List<User> readAdmins() {
-    List<User> admins = new ArrayList<>();
-    try(BufferedReader br
-         = new BufferedReader(new FileReader(file))) {
-      String currLine;
-      while ((currLine = br.readLine()) != null) {
-        User user;
-        String[] userDetails;
-        userDetails = currLine.trim().split("/");
-        if(userDetails[5].equals("true")){
-          user = initUser(userDetails);
-          admins.add(user);
-        }
-      }
-    } catch (FileNotFoundException fnfe) {
-      System.err.println("Файл не найден");
-    } catch (IOException io) {
-      System.err.println("Проблема чтения из файла");
-    }
-    return admins;
-  }
 
 
-  public User initUser(String[] userDetails) {
-
-    String firstName;
-    firstName = userDetails[0];
-
-    String middleName;
-    middleName = userDetails[1];
-    String lastName;
-    lastName = userDetails[2];
-    String email;
-    email = userDetails[3];
-    String hashedPassword;
-    hashedPassword = userDetails[4];
-    boolean isAdmin;
-    isAdmin = userDetails[5].equals("true");
-
-    return new User(firstName, middleName, lastName, email, hashedPassword, isAdmin);
-  }
-
-
-  @Override
+    @Override
   public void  update(User user){
     //В данном приложении не используется
      }

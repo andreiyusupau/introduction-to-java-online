@@ -1,12 +1,10 @@
 package com.nevermind.archive.client.controller;
 
-import com.nevermind.library.dao.FileUserDAO;
-import com.nevermind.library.dao.UserDAO;
-import com.nevermind.library.model.role.User;
-import com.nevermind.library.util.UserUtil;
-import com.nevermind.library.view.Menu;
 
-import java.util.ArrayList;
+import com.nevermind.archive.client.dao.ServerUserDAO;
+import com.nevermind.archive.client.dao.UserDAO;
+import com.nevermind.archive.client.model.User;
+import com.nevermind.archive.client.view.Menu;
 
 
 public class UserController {
@@ -16,10 +14,18 @@ public class UserController {
     private User currentUser;
 
     public UserController(Menu menu) {
-        userDAO = new FileUserDAO();
+        userDAO = new ServerUserDAO();
         this.menu = menu;
     }
 
+    public String getUserPassword(){
+        return   currentUser.getHashedPassword();
+    }
+
+    public String getUsername(){
+        return currentUser.getEmail();
+    }
+    /*
     public boolean login(String email, String password) {
         User user;
         user = userDAO.read(email);
@@ -91,5 +97,5 @@ public class UserController {
             System.err.println("В списке нет администраторов");
         }
     }
-
+*/
 }

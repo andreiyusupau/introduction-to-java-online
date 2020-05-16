@@ -4,7 +4,7 @@ import com.nevermind.archive.client.util.ClientUtil;
 import jdk.jshell.execution.Util;
 
 public class Menu {
-
+/*
     public void loginForm() {
         System.out.println("ВХОД");
         String email;
@@ -68,5 +68,5 @@ public class Menu {
                 } //выход из программы
             }
         }
-    }
+    }*/
 }
