@@ -1,4 +1,4 @@
-package com.nevermind.archive;
+package com.nevermind.archive.client.model;
 
 import java.time.LocalDate;
 
