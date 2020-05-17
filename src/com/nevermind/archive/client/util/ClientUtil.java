@@ -9,6 +9,7 @@ import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 public class ClientUtil {
@@ -103,7 +104,8 @@ public class ClientUtil {
             skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
             byte[] hash;
             hash = skf.generateSecret(spec).getEncoded();
-
+            System.out.println("generate password hash"+toHex(hash));
+            System.out.println("generate password salt"+toHex(salt));
             return iterations + ":" + toHex(salt) + ":" + toHex(hash);
         } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
             System.err.println("Задан неверный алгоритм хеширования");
@@ -123,10 +125,13 @@ public class ClientUtil {
         parts = storedPassword.split(":");
         int iterations;
         iterations = Integer.parseInt(parts[0]);
+        System.out.println("iter "+iterations);
         byte[] salt;
         salt = fromHex(parts[1]);
+        System.out.println("salt "+parts[1]);
         byte[] hash;
         hash = fromHex(parts[2]);
+        System.out.println("     hash "+parts[2]);
         try {
             PBEKeySpec spec;
             spec = new PBEKeySpec(originalPassword.toCharArray(), salt, iterations, hash.length * 8);
@@ -134,13 +139,9 @@ public class ClientUtil {
             skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
             byte[] testHash;
             testHash = skf.generateSecret(spec).getEncoded();
-
-            int diff;
-            diff = hash.length ^ testHash.length;
-            for (int i = 0; i < hash.length && i < testHash.length; i++) {
-                diff |= hash[i] ^ testHash[i];
-            }
-            return diff == 0;
+            System.out.println("test hash "+toHex(testHash));
+//TODO:разобраться
+            return Arrays.equals(hash,testHash);
         } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
             System.err.println("Задан неверный алгоритм хеширования");
         }

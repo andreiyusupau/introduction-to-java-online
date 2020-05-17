@@ -1,4 +1,4 @@
-package com.nevermind.archive.client.dao;
+package com.nevermind.archive.common.dao;
 
 
 import com.nevermind.archive.client.model.User;
@@ -9,7 +9,9 @@ public interface UserDAO {
 
     boolean create(User user);
 
-    boolean login(String email, String hashedPassword);
+    boolean login(String email, String password);
+
+    boolean checkUserRights(String email, String password);
 
      void  update(User user);
 

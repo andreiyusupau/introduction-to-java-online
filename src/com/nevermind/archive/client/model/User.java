@@ -1,26 +1,22 @@
 package com.nevermind.archive.client.model;
 
-public class User {
+import java.io.Serializable;
 
-    private String firstName;
-    private String middleName;
-    private String lastName;
+public class User implements Serializable {
+
     private String email;
     private String hashedPassword;
-    private boolean isAdmin;
+    private boolean admin;
 
-    public User(String firstName, String middleName, String lastName, String email, String hashedPassword, boolean isAdmin) {
-        this.firstName = firstName;
-        this.middleName = middleName;
-        this.lastName = lastName;
+    public User(String email, String hashedPassword,boolean admin) {
         this.email = email;
         this.hashedPassword = hashedPassword;
-        this.isAdmin = isAdmin;
+        this.admin=admin;
     }
 
     @Override
     public String toString() {
-        return firstName + "/" + middleName + "/" + lastName + "/" + email + "/" + hashedPassword + "/" + isAdmin;
+        return email + "/" + hashedPassword+"/"+admin;
     }
 
     public String getEmail() {
@@ -31,7 +27,8 @@ public class User {
         return hashedPassword;
     }
 
-    public boolean isAdmin() {
-        return isAdmin;
+    public boolean isAdmin(){
+        return admin;
     }
+
 }

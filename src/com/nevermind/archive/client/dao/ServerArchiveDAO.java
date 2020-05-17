@@ -7,10 +7,20 @@ import com.nevermind.archive.Message;
 import com.nevermind.archive.client.ArchiveClient;
 import com.nevermind.archive.client.controller.RecordController;
 import com.nevermind.archive.client.model.Record;
+import com.nevermind.archive.common.dao.ArchiveDAO;
 
 public class ServerArchiveDAO implements ArchiveDAO {
 private ArchiveClient client;
 private RecordController rc;
+
+    public ServerArchiveDAO() {
+    }
+
+    public void init(ArchiveClient client, RecordController rc) {
+        this.client = client;
+        this.rc = rc;
+    }
+
 
     @Override
     public boolean create(Record record) {
@@ -45,7 +55,7 @@ private RecordController rc;
     @Override
     public List<Record> readAll() {
         Message message;
-        message= new Message("READ_ALL",null,rc.getUsername(),rc.getUserPassword());
+        message= new Message("READ_ALL_RECORDS",null,rc.getUsername(),rc.getUserPassword());
         Message answer=null;
         try {
             answer= client.communicate(message);
@@ -58,9 +68,9 @@ private RecordController rc;
     }
 
     @Override
-    public boolean update(long id, Record record) {
+    public boolean update(Record record) {
         Message message;
-        message= new Message("UPDATE_RECORD",id,rc.getUsername(),rc.getUserPassword());
+        message= new Message("UPDATE_RECORD",record,rc.getUsername(),rc.getUserPassword());
         Message answer=null;
         try {
             answer= client.communicate(message);

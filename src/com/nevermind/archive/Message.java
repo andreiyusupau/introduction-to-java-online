@@ -1,6 +1,8 @@
 package com.nevermind.archive;
 
-public class Message {
+import java.io.Serializable;
+
+public class Message implements Serializable {
 
     private String message;
     private Object content;

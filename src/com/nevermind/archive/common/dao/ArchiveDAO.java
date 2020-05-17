@@ -1,4 +1,4 @@
-package com.nevermind.archive.client.dao;
+package com.nevermind.archive.common.dao;
 
 import java.util.List;
 import com.nevermind.archive.client.model.Record;
@@ -11,6 +11,6 @@ public interface ArchiveDAO {
 
     List<Record> readAll();
 
-    boolean update(long id, Record record);
+    boolean update(Record record);
 
 }
