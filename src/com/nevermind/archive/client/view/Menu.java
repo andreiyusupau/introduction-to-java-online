@@ -77,20 +77,39 @@ public class Menu {
         while (work) {
             System.out.println("Архив");
 
-            System.out.println("1 - Добавить заметку\n2 - Поиск заметок\n0 - Выход");
+            System.out.println("1 - Создать дело\n2 - Внести изменение в дело\n3 - Просмотреть дело\n" +
+                    "4 - Просмотреть все дела\n0 - Выход");
 
             int n;
-            n = Util.readN("Ваши действия: ", 0, 2); //считываем выбор пользователя
+            n = ClientUtil.readN("Ваши действия: ", 0, 4); //считываем выбор пользователя
 
             //переходим в определенную ветку программы или выходим из нее
             switch (n) {
-                case 1 -> nc.add(Util.readS("Введите заголовок заметки(должен начинаться с заглавной буквы, не более 20 символов): "),
-                        Util.readS("Введите email: "),
-                        Util.readS("Введите текст заметки(от 5 до 200 символов, без абзацев)"));
-                case 2 -> searchMenu();
+                case 1 -> rc.add(
+                        ClientUtil.readS("Введите имя: "),
+                        ClientUtil.readS("Введите отчество: "),
+                        ClientUtil.readS("Введите фамилию: "),
+                        ClientUtil.readS("Введите дату рождения: "),
+                        ClientUtil.readN("Введите статус(1- учится, 2- выпустился, 3- отчислен): ",1,3),
+                        ClientUtil.readN("Введите год поступления: ",1921,2030),
+                        ClientUtil.readN("Введите год выпуска: ",1921,2030),
+                        ClientUtil.readS("Введите характеристику: ")
+                );
+                case 2 ->rc.update(ClientUtil.readN("Введите id: ",0,999999),
+                        ClientUtil.readS("Введите имя: "),
+                        ClientUtil.readS("Введите отчество: "),
+                        ClientUtil.readS("Введите фамилию: "),
+                        ClientUtil.readS("Введите дату рождения: "),
+                        ClientUtil.readN("Введите статус(1- учится, 2- выпустился, 3- отчислен): ",1,3),
+                        ClientUtil.readN("Введите год поступления: ",1921,2030),
+                        ClientUtil.readN("Введите год выпуска: ",1921,2030),
+                        ClientUtil.readS("Введите характеристику: ")
+                );
+                case 3 -> System.out.println(rc.read(ClientUtil.readN("Введите id: ",0,999999)).toString());
+                case 4 -> System.out.println(rc.readAll().toString());
                 case 0 -> {
                     work = false;
-                    nc.onExit();
+                    //nc.onExit();
                 } //выход из программы
             }
         }
