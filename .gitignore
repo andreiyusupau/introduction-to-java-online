@@ -1,2 +1,4 @@
 # Project exclude paths
 /out/
+/.idea/
+/6_Tasks_Seaport.iml
