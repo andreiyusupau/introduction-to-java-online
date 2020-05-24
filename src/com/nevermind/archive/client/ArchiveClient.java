@@ -1,6 +1,6 @@
 package com.nevermind.archive.client;
 
-import com.nevermind.archive.Message;
+import com.nevermind.archive.common.Message;
 import com.nevermind.archive.client.view.Menu;
 
 import java.io.IOException;

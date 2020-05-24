@@ -1,6 +1,6 @@
 package com.nevermind.archive.client.dao;
 
-import com.nevermind.archive.Message;
+import com.nevermind.archive.common.Message;
 import com.nevermind.archive.client.ArchiveClient;
 import com.nevermind.archive.client.controller.UserController;
 import com.nevermind.archive.client.model.User;

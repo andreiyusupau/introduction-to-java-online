@@ -1,8 +1,7 @@
 package com.nevermind.archive.client.controller;
 
 
-import com.nevermind.archive.client.dao.ServerUserDAO;
-import com.nevermind.archive.client.util.ClientUtil;
+import com.nevermind.archive.common.util.Util;
 import com.nevermind.archive.common.dao.UserDAO;
 import com.nevermind.archive.client.model.User;
 import com.nevermind.archive.client.view.Menu;
@@ -43,9 +42,9 @@ public class UserController {
 
     public void register(String email, String password) {
         if (!password.contains("/")) {
-            if (ClientUtil.isEmailValid(email)) {
+            if (Util.isEmailValid(email)) {
                 String hashedPassword;
-                hashedPassword = ClientUtil.generatePasswordHash(password);
+                hashedPassword = Util.generatePasswordHash(password);
                 if (hashedPassword != null) {
                     System.out.println("CREATE USER");
                     userDAO.create(new User(email, hashedPassword,false));

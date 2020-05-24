@@ -1,7 +1,7 @@
 package com.nevermind.archive.server;
 
 
-import com.nevermind.archive.Message;
+import com.nevermind.archive.common.Message;
 import com.nevermind.archive.client.model.Record;
 import com.nevermind.archive.client.model.User;
 import com.nevermind.archive.common.dao.ArchiveDAO;

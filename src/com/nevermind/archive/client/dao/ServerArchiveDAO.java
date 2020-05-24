@@ -3,7 +3,7 @@ package com.nevermind.archive.client.dao;
 import java.io.IOException;
 import java.util.List;
 
-import com.nevermind.archive.Message;
+import com.nevermind.archive.common.Message;
 import com.nevermind.archive.client.ArchiveClient;
 import com.nevermind.archive.client.controller.RecordController;
 import com.nevermind.archive.client.model.Record;

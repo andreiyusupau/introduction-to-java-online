@@ -1,4 +1,4 @@
-package com.nevermind.archive.client.util;
+package com.nevermind.archive.common.util;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -12,7 +12,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
-public class ClientUtil {
+public class Util {
     //функция для ввода n с клавиатуры
     public static int readN(String question, int min, int max) {
 

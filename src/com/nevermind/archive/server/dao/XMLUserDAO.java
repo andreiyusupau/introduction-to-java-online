@@ -1,7 +1,7 @@
 package com.nevermind.archive.server.dao;
 
 import com.nevermind.archive.client.model.User;
-import com.nevermind.archive.client.util.ClientUtil;
+import com.nevermind.archive.common.util.Util;
 import com.nevermind.archive.common.dao.UserDAO;
 
 import java.io.*;
@@ -50,7 +50,7 @@ public class XMLUserDAO implements UserDAO {
             while ((currLine = br.readLine()) != null) {
                 credentials = currLine.trim().split("/");
 
-                if (credentials[0].equals(email) && ClientUtil.validatePassword(password, credentials[1])) {
+                if (credentials[0].equals(email) && Util.validatePassword(password, credentials[1])) {
                     System.out.println("LOGIN SUCCESS ");
                     return true;
                 }
@@ -74,7 +74,7 @@ public boolean checkUserRights(String email, String password){
         while ((currLine = br.readLine()) != null) {
             credentials = currLine.trim().split("/");
 
-            if (credentials[0].equals(email) && ClientUtil.validatePassword(password, credentials[1])&&credentials[2].equals("true")) {
+            if (credentials[0].equals(email) && Util.validatePassword(password, credentials[1])&&credentials[2].equals("true")) {
                 return true;
             }
         }

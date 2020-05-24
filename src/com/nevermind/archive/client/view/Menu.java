@@ -2,7 +2,7 @@ package com.nevermind.archive.client.view;
 
 import com.nevermind.archive.client.controller.RecordController;
 import com.nevermind.archive.client.controller.UserController;
-import com.nevermind.archive.client.util.ClientUtil;
+import com.nevermind.archive.common.util.Util;
 
 public class Menu {
 
@@ -26,7 +26,7 @@ public class Menu {
             System.out.println("1 - Войти\n2 - Зарегистрироваться\n0 - Выход");
 
             int n;
-            n = ClientUtil.readN("Ваши действия: ", 0, 2); //считываем выбор пользователя
+            n = Util.readN("Ваши действия: ", 0, 2); //считываем выбор пользователя
 
             //переходим в определнную ветку программы или выходим из нее
             switch (n) {
@@ -41,8 +41,8 @@ public class Menu {
         System.out.println("ВХОД");
         String email;
         String password;
-        email = ClientUtil.readS("Введите email :");
-        password = ClientUtil.readS("Введите пароль: ");
+        email = Util.readS("Введите email :");
+        password = Util.readS("Введите пароль: ");
         if (uc.login(email, password)) {
             System.out.println("Вход успешен");
             menu();
@@ -58,10 +58,10 @@ public class Menu {
         String password = "";
         String passwordRepeat = "r";
 
-        email = ClientUtil.readS("Введите ваш email :");
+        email = Util.readS("Введите ваш email :");
         while (!password.equals(passwordRepeat)) {
-            password = ClientUtil.readS("Введите пароль: ");
-            passwordRepeat = ClientUtil.readS("Повторно введите пароль: ");
+            password = Util.readS("Введите пароль: ");
+            passwordRepeat = Util.readS("Повторно введите пароль: ");
         } //TODO:рабочий ввод пароля с сокрытием символов
         if (password != null) {
             uc.register(email, password);
@@ -81,29 +81,29 @@ public class Menu {
                     "4 - Просмотреть все дела\n0 - Выход");
 
             int n;
-            n = ClientUtil.readN("Ваши действия: ", 0, 4); //считываем выбор пользователя
+            n = Util.readN("Ваши действия: ", 0, 4); //считываем выбор пользователя
 
             //переходим в определенную ветку программы или выходим из нее
             switch (n) {
                 case 1 -> rc.add(
-                        ClientUtil.readS("Введите имя: "),
-                        ClientUtil.readS("Введите отчество: "),
-                        ClientUtil.readS("Введите фамилию: "),
-                        ClientUtil.readS("Введите дату рождения: "),
-                        ClientUtil.readN("Введите год поступления: ",1921,2030),
-                        ClientUtil.readN("Введите год выпуска: ",1921,2030),
-                        ClientUtil.readS("Введите характеристику: ")
+                        Util.readS("Введите имя: "),
+                        Util.readS("Введите отчество: "),
+                        Util.readS("Введите фамилию: "),
+                        Util.readS("Введите дату рождения: "),
+                        Util.readN("Введите год поступления: ",1921,2030),
+                        Util.readN("Введите год выпуска: ",1921,2030),
+                        Util.readS("Введите характеристику: ")
                 );
-                case 2 ->rc.update(ClientUtil.readN("Введите id: ",0,999999),
-                        ClientUtil.readS("Введите имя: "),
-                        ClientUtil.readS("Введите отчество: "),
-                        ClientUtil.readS("Введите фамилию: "),
-                        ClientUtil.readS("Введите дату рождения: "),
-                        ClientUtil.readN("Введите год поступления: ",1921,2030),
-                        ClientUtil.readN("Введите год выпуска: ",1921,2030),
-                        ClientUtil.readS("Введите характеристику: ")
+                case 2 ->rc.update(Util.readN("Введите id: ",0,999999),
+                        Util.readS("Введите имя: "),
+                        Util.readS("Введите отчество: "),
+                        Util.readS("Введите фамилию: "),
+                        Util.readS("Введите дату рождения: "),
+                        Util.readN("Введите год поступления: ",1921,2030),
+                        Util.readN("Введите год выпуска: ",1921,2030),
+                        Util.readS("Введите характеристику: ")
                 );
-                case 3 -> System.out.println(rc.read(ClientUtil.readN("Введите id: ",0,999999)).toString());
+                case 3 -> System.out.println(rc.read(Util.readN("Введите id: ",0,999999)).toString());
                 case 4 -> System.out.println(rc.readAll().toString());
                 case 0 -> {
                     work = false;

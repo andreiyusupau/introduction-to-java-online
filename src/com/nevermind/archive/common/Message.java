@@ -1,4 +1,4 @@
-package com.nevermind.archive;
+package com.nevermind.archive.common;
 
 import java.io.Serializable;
 
