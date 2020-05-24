@@ -1,5 +1,5 @@
 # 4_Programming_with_classes
-В данном репозитории находятся решения задач из второй части курса [Introduction to Java Online](https://training.by/#!/Training/2397?lang=en).
+В данном репозитории находятся решения задач из четвертой части курса [Introduction to Java Online](https://training.by/#!/Training/2397?lang=en).
 Пакет simpleclasses содержит решения задач раздела "Простейшие классы и объекты", задания размещены в следующих подпакетах:
 1) test1
 2) test2
