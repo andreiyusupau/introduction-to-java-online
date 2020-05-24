@@ -72,8 +72,8 @@ public class BookController {
     }
 
     //запрос информации о книге по id
-    public void getBookInfo(int bookId) {
-        bookDAO.read(bookId);
+    public Book getBook(int bookId) {
+        return bookDAO.read(bookId);
     }
 
     //переход на предыдущую страницу
@@ -90,7 +90,7 @@ public class BookController {
         }
     }
 
-    //определние количества страниц
+    //определение количества страниц
     public int pageCount() {
         int books;
         books = bookDAO.readAll().size();

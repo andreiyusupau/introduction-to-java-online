@@ -83,7 +83,7 @@ public class Menu {
             System.out.println("Страница " + page + " из " + bc.pageCount());
             if (books != null && books.size() > 0) {
                 for (Book book : books) {
-                    System.out.println(book.toString());
+                    System.out.println(book.print());
                 }
             } else {
                 System.out.println("Каталог пуст");
@@ -100,7 +100,15 @@ public class Menu {
                 case 1 -> bc.previousPage(page);
                 case 2 -> bc.nextPage(page);
                 case 3 -> searchMenu();
-                case 4 -> bc.getBookInfo(MenuUtil.readN("Номер книги из каталога: ", 0, 5)); //считываем выбор пользователя);
+                case 4 -> {
+                    Book book;
+                    book = bc.getBook(MenuUtil.readN("Номер книги из каталога: ", 0, bc.getBooks().size())); //считываем выбор пользователя);
+                    if (uc.isAdmin()) {
+                        bookInfo(book);
+                    } else {
+                        System.out.println(book.print());
+                    }
+                }
                 case 5 -> {
                     if (uc.isAdmin()) {
                         addBookMenu();

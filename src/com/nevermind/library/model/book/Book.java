@@ -40,6 +40,10 @@ public abstract class Book {
 
     @Override
     public String toString() {
-        return id + "/" + name + "/" + author + "/" + publisher + "/" + yearOfPublishing + "/";
+        return "[КНИГА]" + "\n" + id + "\n" + name + "\n" + author + "\n" + publisher + "\n" + yearOfPublishing + "\n";
+    }
+
+    public String print() {
+        return id + ", " + name + ", " + author + ", " + publisher + ", " + yearOfPublishing + "г., ";
     }
 }

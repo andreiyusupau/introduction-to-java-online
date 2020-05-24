@@ -11,6 +11,10 @@ public class PaperBook extends Book {
 
     @Override
     public String toString() {
-        return "Бумажная книга/"+super.toString()+hardCover;
+        return super.toString() + "Бумажная книга\n" + hardCover;
+    }
+
+    public String print() {
+        return super.print() + "Бумажная книга, " + hardCover;
     }
 }
