@@ -26,6 +26,19 @@ public class Record implements Serializable {
         this.description = description;
     }
 
+    @Override
+    public String toString() {
+        return "Record{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", middleName='" + middleName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", dateOfBirth=" + dateOfBirth +
+                ", yearOfEntry=" + yearOfEntry +
+                ", yearOfGraduation=" + yearOfGraduation +
+                ", description='" + description + '\'' +
+                '}';
+    }
 
     public long getId() {
         return id;
@@ -90,4 +103,5 @@ public class Record implements Serializable {
     public void setDescription(String description) {
         this.description = description;
     }
+
 }

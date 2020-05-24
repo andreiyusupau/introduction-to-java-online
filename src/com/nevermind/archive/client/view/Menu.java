@@ -90,7 +90,6 @@ public class Menu {
                         ClientUtil.readS("Введите отчество: "),
                         ClientUtil.readS("Введите фамилию: "),
                         ClientUtil.readS("Введите дату рождения: "),
-                        ClientUtil.readN("Введите статус(1- учится, 2- выпустился, 3- отчислен): ",1,3),
                         ClientUtil.readN("Введите год поступления: ",1921,2030),
                         ClientUtil.readN("Введите год выпуска: ",1921,2030),
                         ClientUtil.readS("Введите характеристику: ")
@@ -100,7 +99,6 @@ public class Menu {
                         ClientUtil.readS("Введите отчество: "),
                         ClientUtil.readS("Введите фамилию: "),
                         ClientUtil.readS("Введите дату рождения: "),
-                        ClientUtil.readN("Введите статус(1- учится, 2- выпустился, 3- отчислен): ",1,3),
                         ClientUtil.readN("Введите год поступления: ",1921,2030),
                         ClientUtil.readN("Введите год выпуска: ",1921,2030),
                         ClientUtil.readS("Введите характеристику: ")

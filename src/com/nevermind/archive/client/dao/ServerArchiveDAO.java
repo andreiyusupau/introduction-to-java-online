@@ -49,6 +49,7 @@ private RecordController rc;
         } catch (ClassNotFoundException e) {
             System.err.println("Класс не найден");
         }
+        System.out.println("ANSWER"+(answer.getContent()).toString());
         return (Record) answer.getContent();
     }
 

@@ -1,16 +1,13 @@
 package com.nevermind.archive.server.dao;
 
-import com.nevermind.archive.client.ArchiveClient;
-import com.nevermind.archive.client.controller.RecordController;
 import com.nevermind.archive.common.dao.ArchiveDAO;
 import com.nevermind.archive.client.model.Record;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.*;
 import javax.xml.stream.events.*;
 import java.io.*;
+import java.nio.file.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,26 +21,24 @@ public class XMLArchiveDAO implements ArchiveDAO {
 
     @Override
     public boolean create(Record record) {
-        boolean flag = false;
+
         File file = new File(fileName);
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-                flag = true;
-            } catch (IOException ioe) {
-                System.err.println("Не удалось создать новый файл");
-                return false;
-            }
-        }
-        XMLEventReader reader=null;
-        XMLEventWriter writer=null;
+        boolean flag;
+        flag = !file.exists();
+
+
+        XMLEventReader reader = null;
+        XMLEventWriter writer = null;
+        FileOutputStream os = null;
+        FileInputStream is = null;
         try {
             XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
             XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
             XMLEventFactory eventFactory = XMLEventFactory.newInstance();
-            reader = xmlInputFactory.createXMLEventReader(new FileInputStream(file));
-            writer = xmlOutputFactory.createXMLEventWriter(new FileOutputStream(file));
+
             if (flag) {
+                os = new FileOutputStream(file);
+                writer = xmlOutputFactory.createXMLEventWriter(os);
                 StartDocument startDocument = eventFactory.createStartDocument("UTF-8", "1.0");
                 writer.add(startDocument);
                 Characters space;
@@ -60,21 +55,30 @@ public class XMLArchiveDAO implements ArchiveDAO {
                 writer.add(endElement);
                 EndDocument endDocument = eventFactory.createEndDocument();
                 writer.add(endDocument);
+
+                os.close();
+                writer.close();
             } else {
-
-
+                File temp = new File("temp.xml");
+                os = new FileOutputStream(temp);
+                writer = xmlOutputFactory.createXMLEventWriter(os);
+                is = new FileInputStream(file);
+                reader = xmlInputFactory.createXMLEventReader(is);
                 long currId = 0;
                 while (reader.hasNext()) {
                     XMLEvent nextEvent = reader.nextEvent();
-                    if (nextEvent.isAttribute()) {
-                        currId = Long.parseLong(nextEvent.asCharacters().getData());
+                    Characters space;
+                    space = eventFactory.createSpace("\n");
+
+                    if (nextEvent.isStartElement() && nextEvent.asStartElement().getName().getLocalPart().equals("student")) {
+                        currId = Long.parseLong(nextEvent.asStartElement().getAttributeByName(new QName("id")).getValue());
+                        System.out.println("change currid " + currId);
                     }
                     if (nextEvent.isEndElement()) {
                         EndElement endElement = nextEvent.asEndElement();
                         if (endElement.getName().getLocalPart().equals("students")) {
-                            addRecord(writer, eventFactory, record, currId);
-                            Characters space;
-                            space = eventFactory.createSpace("\n");
+                            addRecord(writer, eventFactory, record, currId + 1);
+
                             writer.add(space);
                             writer.add(endElement);
                         } else {
@@ -82,33 +86,56 @@ public class XMLArchiveDAO implements ArchiveDAO {
                         }
                     } else {
                         writer.add(nextEvent);
+                        if (nextEvent.isStartDocument()) {
+                            writer.add(space);
+                        }
                     }
                 }
+                is.close();
+                reader.close();
+                os.close();
+                writer.close();
+
+                try {
+                    Files.move(Path.of(temp.toURI()), Path.of(file.toURI()), StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
+                    System.err.println("Ошибка при замене файла");
+                }
+
             }
 
         } catch (FileNotFoundException fileNotFoundException) {
             System.err.println("Файл не найден");
-        } catch (XMLStreamException xmlStreamException) {
-            System.err.println("Проблема чтения/записи в XML файл");
-        }finally {
+        }  catch (XMLStreamException e) {
+            System.err.println("Ошибка при закрытии потока записи в XML");
+        } catch (IOException e) {
+            System.err.println("Ошибка при закрытии потока записи");
+        } finally {
             try {
-                if(reader!=null)
-                reader.close();
-                if(writer!=null)
-                writer.close();
-            } catch (XMLStreamException e) {
-                e.printStackTrace();
+                if (is != null)
+                    is.close();
+                if (reader != null)
+                    reader.close();
+                if (os != null)
+                    os.close();
+                if (writer != null)
+                    writer.close();
+            }  catch (XMLStreamException e) {
+                System.err.println("Ошибка при закрытии потока записи в XML");
+            } catch (IOException e) {
+                System.err.println("Ошибка при закрытии потока записи");
             }
         }
         return false;
     }
 
     private void addRecord(XMLEventWriter writer, XMLEventFactory eventFactory, Record record, long currId) throws XMLStreamException {
+
         StartElement startElement;
         startElement = eventFactory.createStartElement(new QName("student"), null, null);
         writer.add(startElement);
         Attribute attribute;
-        attribute = eventFactory.createAttribute("id", String.valueOf(currId + 1));
+        attribute = eventFactory.createAttribute("id", String.valueOf(currId));
         writer.add(attribute);
         Characters space;
         space = eventFactory.createSpace("\n");
@@ -127,6 +154,7 @@ public class XMLArchiveDAO implements ArchiveDAO {
         addNode(writer, eventFactory, "yearOfGraduation", String.valueOf(record.getYearOfGraduation()));
         writer.add(space);
         addNode(writer, eventFactory, "description", record.getDescription());
+        writer.add(space);
         EndElement endElement1;
         endElement1 = eventFactory.createEndElement(new QName("student"), null);
         writer.add(endElement1);
@@ -145,22 +173,19 @@ public class XMLArchiveDAO implements ArchiveDAO {
 
     @Override
     public Record read(long id) {
-
+        XMLEventReader reader = null;
         try {
             XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
-            XMLEventReader reader = xmlInputFactory.createXMLEventReader(new FileInputStream(fileName));
-
+            reader = xmlInputFactory.createXMLEventReader(new FileInputStream(fileName));
+            Record record = null;
             while (reader.hasNext()) {
                 XMLEvent nextEvent = reader.nextEvent();
-                Record record=null;
                 if (nextEvent.isStartElement()) {
                     StartElement startElement = nextEvent.asStartElement();
-
                     if (startElement.getName().getLocalPart().equals("student") &&
                             Long.parseLong(startElement.getAttributeByName(new QName("id")).getValue()) == id) {
-
                         record = new Record();
-                       readRecord(reader,nextEvent,record);
+                        readRecord(reader, nextEvent, record);
                     }
 
                 }
@@ -172,51 +197,78 @@ public class XMLArchiveDAO implements ArchiveDAO {
                 }
             }
         } catch (FileNotFoundException fileNotFoundException) {
-            fileNotFoundException.printStackTrace();
+            System.err.println("Файл не найден");
         } catch (XMLStreamException xmlStreamException) {
-            xmlStreamException.printStackTrace();
+            System.err.println("Ошибка при чтении файла");
+        } finally {
+            try {
+                if (reader != null)
+                    reader.close();
+            } catch (XMLStreamException e) {
+                System.err.println("Ошибка при закрытии потока чтения XML файла");
+            }
         }
         return null;
     }
 
-    public void readRecord(XMLEventReader reader,XMLEvent nextEvent,Record record) throws XMLStreamException {
+    public void readRecord(XMLEventReader reader, XMLEvent nextEvent, Record record) throws XMLStreamException {
         record.setId(Long.parseLong(nextEvent.asStartElement().getAttributeByName(new QName("id")).getValue()));
-        nextEvent = reader.nextEvent();
-        record.setFirstName(nextEvent.asCharacters().getData());
-        nextEvent = reader.nextEvent();
-        record.setMiddleName(nextEvent.asCharacters().getData());
-        nextEvent = reader.nextEvent();
-        record.setLastName(nextEvent.asCharacters().getData());
-
-        nextEvent = reader.nextEvent();
-        record.setDateOfBirth(LocalDate.parse(nextEvent.asCharacters().getData()));
-
-        nextEvent = reader.nextEvent();
-        record.setYearOfEntry(Integer.parseInt(nextEvent.asCharacters().getData()));
-
-        nextEvent = reader.nextEvent();
-        record.setYearOfGraduation(Integer.parseInt(nextEvent.asCharacters().getData()));
-
-        nextEvent = reader.nextEvent();
-        record.setDescription(nextEvent.asCharacters().getData());
+        boolean flag = true;
+        while (reader.hasNext() && flag) {
+            nextEvent = reader.nextEvent();
+            if (nextEvent.isStartElement()) {
+                StartElement startElement = nextEvent.asStartElement();
+                switch (startElement.getName().getLocalPart()) {
+                    case "firstName" -> {
+                        nextEvent = reader.nextEvent();
+                        record.setFirstName(nextEvent.asCharacters().getData());
+                    }
+                    case "middleName" -> {
+                        nextEvent = reader.nextEvent();
+                        record.setMiddleName(nextEvent.asCharacters().getData());
+                    }
+                    case "lastName" -> {
+                        nextEvent = reader.nextEvent();
+                        record.setLastName(nextEvent.asCharacters().getData());
+                    }
+                    case "dateOfBirth" -> {
+                        nextEvent = reader.nextEvent();
+                        record.setDateOfBirth(LocalDate.parse(nextEvent.asCharacters().getData()));
+                    }
+                    case "yearOfEntry" -> {
+                        nextEvent = reader.nextEvent();
+                        record.setYearOfEntry(Integer.parseInt(nextEvent.asCharacters().getData()));
+                    }
+                    case "yearOfGraduation" -> {
+                        nextEvent = reader.nextEvent();
+                        record.setYearOfGraduation(Integer.parseInt(nextEvent.asCharacters().getData()));
+                    }
+                    case "description" -> {
+                        nextEvent = reader.nextEvent();
+                        record.setDescription(nextEvent.asCharacters().getData());
+                        flag = false;
+                    }
+                }
+            }
+        }
     }
 
 
     @Override
     public List<Record> readAll() {
-
+        XMLEventReader reader = null;
         try {
             XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
-            XMLEventReader reader = xmlInputFactory.createXMLEventReader(new FileInputStream(fileName));
+            reader = xmlInputFactory.createXMLEventReader(new FileInputStream(fileName));
             List<Record> records = new ArrayList<>();
+            Record record = null;
             while (reader.hasNext()) {
                 XMLEvent nextEvent = reader.nextEvent();
-                Record record = null;
                 if (nextEvent.isStartElement()) {
                     StartElement startElement = nextEvent.asStartElement();
-                    if(startElement.getName().equals("student")){
-                            record = new Record();
-                        readRecord(reader,nextEvent,record);
+                    if (startElement.getName().getLocalPart().equals("student")) {
+                        record = new Record();
+                        readRecord(reader, nextEvent, record);
                     }
                 }
 
@@ -229,37 +281,43 @@ public class XMLArchiveDAO implements ArchiveDAO {
             }
             return records;
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            System.err.println("Файл не нйден");
             return null;
         } catch (XMLStreamException e) {
-            e.printStackTrace();
+            System.err.println("Ошибка при чтении из файла");
             return null;
+        } finally {
+            try {
+                if (reader != null)
+                    reader.close();
+            } catch (XMLStreamException e) {
+                System.err.println("Ошибка при закрытии потока чтения из файла");
+            }
         }
 
     }
 
     @Override
     public boolean update(Record record) {
-        long targetId=record.getId();
-        boolean flag = false;
+        long targetId = record.getId();
         File file = new File(fileName);
-        if (!file.exists()) {
-            try  {
-                file.createNewFile();
-              flag=true;
-            } catch (IOException ioe) {
-                System.err.println("Не удалось создать новый файл");
-                return false;
-            }
-        }
-        XMLEventReader reader=null;
-        XMLEventWriter writer=null;
+        boolean flag;
+        flag = !file.exists();
+        XMLEventReader reader = null;
+        XMLEventWriter writer = null;
+        FileOutputStream os = null;
+        FileInputStream is = null;
         try {
             XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
             XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
             XMLEventFactory eventFactory = XMLEventFactory.newInstance();
-            reader = xmlInputFactory.createXMLEventReader(new FileInputStream(file));
-            writer = xmlOutputFactory.createXMLEventWriter(new FileOutputStream(file));
+            File temp = new File("temp.xml");
+
+            is = new FileInputStream(file);
+            reader = xmlInputFactory.createXMLEventReader(is);
+            os = new FileOutputStream(temp);
+            writer = xmlOutputFactory.createXMLEventWriter(os);
+
             if (flag) {
                 StartDocument startDocument = eventFactory.createStartDocument("UTF-8", "1.0");
                 writer.add(startDocument);
@@ -278,21 +336,20 @@ public class XMLArchiveDAO implements ArchiveDAO {
                 EndDocument endDocument = eventFactory.createEndDocument();
                 writer.add(endDocument);
             } else {
-
                 long currId = 0;
                 while (reader.hasNext()) {
                     XMLEvent nextEvent = reader.nextEvent();
-                    if (nextEvent.isAttribute()) {
-                        currId = Long.parseLong(nextEvent.asCharacters().getData());
-                    }
-                    if (nextEvent.isEndElement()) {
-                        EndElement endElement = nextEvent.asEndElement();
-                        if (endElement.getName().getLocalPart().equals("students")) {
+                    if (nextEvent.isStartElement() && nextEvent.asStartElement().getName().getLocalPart().equals("student")) {
+                        currId = Long.parseLong(nextEvent.asStartElement().getAttributeByName(new QName("id")).getValue());
+                        if (currId == targetId) {
                             addRecord(writer, eventFactory, record, currId);
                             Characters space;
                             space = eventFactory.createSpace("\n");
                             writer.add(space);
-                            writer.add(endElement);
+                            while (!(nextEvent.isEndElement() && nextEvent.asEndElement().getName().getLocalPart().equals("student"))) {
+                                nextEvent = reader.nextEvent();
+                            }
+                            reader.nextEvent();
                         } else {
                             writer.add(nextEvent);
                         }
@@ -301,23 +358,39 @@ public class XMLArchiveDAO implements ArchiveDAO {
                     }
                 }
             }
-
+            is.close();
+            reader.close();
+            os.close();
+            writer.close();
+            try {
+                Files.move(Path.of(temp.toURI()), Path.of(file.toURI()), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                System.err.println("Ошибка при заменен файла");
+            }
         } catch (FileNotFoundException fileNotFoundException) {
             System.err.println("Файл не найден");
         } catch (XMLStreamException xmlStreamException) {
             System.err.println("Проблема чтения/записи в XML файл");
-        }finally {
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
             try {
-                if(reader!=null)
+                if (is != null)
+                    is.close();
+                if (reader != null)
                     reader.close();
-                if(writer!=null)
+                if (os != null)
+                    os.close();
+                if (writer != null)
                     writer.close();
             } catch (XMLStreamException e) {
-                e.printStackTrace();
+                System.err.println("Ошибка при закрытии потока записи в XML");
+            } catch (IOException e) {
+                System.err.println("Ошибка при закрытии потока записи");
             }
         }
         return false;
     }
-    }
+}
 
 

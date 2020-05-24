@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><students>
+<student id="0">
+<firstName>qwe</firstName>
+<middleName>fasd</middleName>
+<lastName>sdf</lastName>
+<dateOfBirth>2000-12-12</dateOfBirth>
+<yearOfEntry>2000</yearOfEntry>
+<yearOfGraduation>2000</yearOfGraduation>
+<description>fssfd</description>
+</student>
+<student id="1">
+<firstName>Unter</firstName>
+<middleName>aewq</middleName>
+<lastName>qweqwe</lastName>
+<dateOfBirth>2001-01-01</dateOfBirth>
+<yearOfEntry>2000</yearOfEntry>
+<yearOfGraduation>2000</yearOfGraduation>
+<description>fsfsdsdf</description>
+</student><student id="2">
+<firstName>sdfsdsfd</firstName>
+<middleName>sfddf</middleName>
+<lastName>sfdsfd</lastName>
+<dateOfBirth>2000-12-12</dateOfBirth>
+<yearOfEntry>2000</yearOfEntry>
+<yearOfGraduation>2000</yearOfGraduation>
+<description>sfdsdf</description>
+</student>
+<student id="3">
+<firstName>qwe</firstName>
+<middleName>qwe</middleName>
+<lastName>qwe</lastName>
+<dateOfBirth>2000-12-12</dateOfBirth>
+<yearOfEntry>2000</yearOfEntry>
+<yearOfGraduation>2000</yearOfGraduation>
+<description>sffd</description>
+</student>
+</students>
