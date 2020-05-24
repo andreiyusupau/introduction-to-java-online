@@ -8,43 +8,51 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+//реализация DAO для работы с текстовым файлов в качестве базы данных
 public class FileBookDAO implements BookDAO {
-    private final String fileName = "bookList.txt";
-    private File file = new File(fileName);
-    private int currentId;
+    private final String fileName = "bookList.txt";//имя файла-хранилища
+    private File file = new File(fileName); //сам файл
+    private int currentId; //текущий id
 
+    //конструктор
     public FileBookDAO() {
+
+        //считываем все книги и считаем их количество для определения текущего id
         ArrayList<Book> books = (ArrayList<Book>) readAll();
         if (books.size() > 0) {
             currentId = books.get(books.size() - 1).getId() + 1;
         } else {
             currentId = 0;
-
         }
     }
 
+    //добавить книгу
     @Override
     public boolean create(Book book) {
 
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException ioe) {
-                System.err.println("Не удалось создать новый файл");
-                return false;
-            }
+        //если файл не существует создаем его
+        try {
+            file.createNewFile();
+        } catch (IOException ioe) {
+            System.err.println("Не удалось создать новый файл");
+            return false;
         }
 
+        //для автоматического закрытия потока ввода будем использовать try-with-resources
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(file, true))) {
-            book.setId(currentId);
-            currentId++;
+
+            book.setId(currentId);//присваиваем книге id
+
+            currentId++; //увеличиваем значение текущего id
+
             String bookStr;
             bookStr = book.toString();
 
+            //если файл уже содержит записи, переходим на следующую строку
             if (file.length() > 0) {
                 bw.newLine();
             }
-            bw.write(bookStr);
+            bw.write(bookStr); //добавляем запись о книге
             return true;
         } catch (IOException io) {
             System.err.println("Ошибка при записи в файл");
@@ -52,11 +60,14 @@ public class FileBookDAO implements BookDAO {
         }
     }
 
+    //считать книгу по id
     @Override
     public Book read(int bookId) throws NullPointerException {
+
+        //используется блок try-with-resources для автоматического закрытия потока ввода
         try (BufferedReader br
                      = new BufferedReader(new FileReader(file))) {
-            int counter = 0;
+            int counter = 0; //счетчик id
             String currLine;
             while ((currLine = br.readLine()) != null && counter < bookId) {
                 counter++;

@@ -67,7 +67,7 @@ public class Menu {
         while (!password.equals(passwordRepeat)) {
             password = MenuUtil.readS("Введите пароль: ");
             passwordRepeat = MenuUtil.readS("Повторно введите пароль: ");
-        } //TODO:рабочий ввод пароля с скорытием символов
+        } //TODO:рабочий ввод пароля с сокрытием символов
         if (password != null) {
             uc.register(firstName, middleName, lastName, email, password);
         }
