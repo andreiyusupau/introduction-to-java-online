@@ -1,37 +1,29 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><students>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<students>
 <student id="0">
-<firstName>qwe</firstName>
-<middleName>fasd</middleName>
-<lastName>sdf</lastName>
+<firstName>Иван</firstName>
+<middleName>Иванович</middleName>
+<lastName>Иванов</lastName>
 <dateOfBirth>2000-12-12</dateOfBirth>
-<yearOfEntry>2000</yearOfEntry>
-<yearOfGraduation>2000</yearOfGraduation>
-<description>fssfd</description>
+<yearOfEntry>2018</yearOfEntry>
+<yearOfGraduation>2023</yearOfGraduation>
+<description>нет</description>
 </student>
 <student id="1">
-<firstName>Unter</firstName>
-<middleName>aewq</middleName>
-<lastName>qweqwe</lastName>
+<firstName>Петр</firstName>
+<middleName>Петрович</middleName>
+<lastName>Петров</lastName>
 <dateOfBirth>2001-01-01</dateOfBirth>
-<yearOfEntry>2000</yearOfEntry>
-<yearOfGraduation>2000</yearOfGraduation>
-<description>fsfsdsdf</description>
+<yearOfEntry>2019</yearOfEntry>
+<yearOfGraduation>2024</yearOfGraduation>
+<description>отчислен</description>
 </student><student id="2">
-<firstName>sdfsdsfd</firstName>
-<middleName>sfddf</middleName>
-<lastName>sfdsfd</lastName>
-<dateOfBirth>2000-12-12</dateOfBirth>
-<yearOfEntry>2000</yearOfEntry>
-<yearOfGraduation>2000</yearOfGraduation>
-<description>sfdsdf</description>
-</student>
-<student id="3">
-<firstName>qwe</firstName>
-<middleName>qwe</middleName>
-<lastName>qwe</lastName>
-<dateOfBirth>2000-12-12</dateOfBirth>
-<yearOfEntry>2000</yearOfEntry>
-<yearOfGraduation>2000</yearOfGraduation>
-<description>sffd</description>
+<firstName>Георгий</firstName>
+<middleName>Георгиевич</middleName>
+<lastName>Семенов</lastName>
+<dateOfBirth>2000-11-01</dateOfBirth>
+<yearOfEntry>2018</yearOfEntry>
+<yearOfGraduation>2022</yearOfGraduation>
+<description>низкая обучаемость</description>
 </student>
 </students>
