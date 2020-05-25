@@ -5,11 +5,11 @@ import javax.crypto.spec.PBEKeySpec;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.regex.Pattern;
 
 public class Util {
@@ -89,93 +89,95 @@ public class Util {
         return s;
 
     }
-
+    //метод для хеширования пароля
     public static String generatePasswordHash(String password) {
+
         int iterations;
-        iterations = 1000;
+        iterations = 1000;//количество операций хеширования
+
         char[] chars;
-        chars = password.toCharArray();
+        chars = password.toCharArray(); //переводим пароль в массив символов
+
         try {
             byte[] salt;
-            salt = getSalt();
+            salt = getSalt(); //создаем "соль"
+
             PBEKeySpec spec;
-            spec = new PBEKeySpec(chars, salt, iterations, 64 * 8);
+            spec = new PBEKeySpec(chars, salt, iterations, 64 * 8); //задаем параметры алгоритма хеширования
+
             SecretKeyFactory skf;
-            skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+            skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1"); //выбираем алгоритм "PBKDF2WithHmacSHA1"
+
             byte[] hash;
-            hash = skf.generateSecret(spec).getEncoded();
-            System.out.println("generate password hash"+toHex(hash));
-            System.out.println("generate password salt"+toHex(salt));
-            return iterations + ":" + toHex(salt) + ":" + toHex(hash);
+            hash = skf.generateSecret(spec).getEncoded(); //создаем хеш пароля
+
+            Base64.Encoder en = Base64.getEncoder();//создаем кодировщик
+            //для валидации пароля в будущем нам потребуется знать число итераций и соль,
+            // поэтому записываем их вместе с паролем в формате String с разделителем ":"
+            return iterations + ":" + en.encodeToString(salt) + ":" + en.encodeToString(hash);
         } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
             System.err.println("Задан неверный алгоритм хеширования");
         }
         return null;
     }
 
+    //метод для создания случайной "соли"
     private static byte[] getSalt() throws NoSuchAlgorithmException {
-        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
-        byte[] salt = new byte[16];
-        sr.nextBytes(salt);
+        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");//создаем объект SecureRandom
+
+        byte[] salt = new byte[16]; //создаем массив типа byte
+
+        sr.nextBytes(salt); //генерируем случайное значение
         return salt;
     }
 
+    //функция валидации пароля (originalPassword подается в исходном виде, stored - в хешированном (как он хранится в файле))
     public static boolean validatePassword(String originalPassword, String storedPassword) {
         String[] parts;
-        parts = storedPassword.split(":");
+        parts = storedPassword.split(":"); //считываем "соль", число итерация и хешированный пароль из хранящегося пароля
+
         int iterations;
-        iterations = Integer.parseInt(parts[0]);
-        System.out.println("iter "+iterations);
+        iterations = Integer.parseInt(parts[0]); //присваиваем число итераций переменной iterations
+
+        Base64.Decoder dec = Base64.getDecoder(); //раскодировщик, для перевода из строки в массив byte
+
         byte[] salt;
-        salt = fromHex(parts[1]);
-        System.out.println("salt "+parts[1]);
+        salt = dec.decode(parts[1]); //указываем "соль"
+
         byte[] hash;
-        hash = fromHex(parts[2]);
-        System.out.println("     hash "+parts[2]);
+        hash = dec.decode(parts[2]); //указываем хеш пароля
+
         try {
+            //создаем алгоритм хеширования с теми же параметрами, что были заданы при создании пароля
             PBEKeySpec spec;
             spec = new PBEKeySpec(originalPassword.toCharArray(), salt, iterations, hash.length * 8);
+
             SecretKeyFactory skf;
-            skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+            skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");  //выбираем алгоритм "PBKDF2WithHmacSHA1"
+
             byte[] testHash;
-            testHash = skf.generateSecret(spec).getEncoded();
-            System.out.println("test hash "+toHex(testHash));
-//TODO:разобраться
-            return Arrays.equals(hash,testHash);
+            testHash = skf.generateSecret(spec).getEncoded(); //хешируем введенный пароль
+
+            return Arrays.equals(testHash, hash); //сравниваем его с тем, который хранится в базе
+
         } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
             System.err.println("Задан неверный алгоритм хеширования");
         }
         return false;
     }
 
-    private static byte[] fromHex(String hex) {
-        byte[] bytes = new byte[hex.length() / 2];
-        for (int i = 0; i < bytes.length; i++) {
-            bytes[i] = (byte) Integer.parseInt(hex.substring(2 * i, 2 * i + 2), 16);
-        }
-        return bytes;
-    }
 
-    private static String toHex(byte[] array) {
-        BigInteger bi = new BigInteger(1, array);
-        String hex = bi.toString(16);
-        int paddingLength = (array.length * 2) - hex.length();
-        if (paddingLength > 0) {
-            return String.format("%0" + paddingLength + "d", 0) + hex;
-        } else {
-            return hex;
-        }
-    }
-
-    //https://howtodoinjava.com/regex/java-regex-validate-email-address/
+    //функция валидации email
     public static boolean isEmailValid(String email) {
+        //создаем регулярное выражение, отражающее правильную форму email
         String emailRegex = "^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
 
+        //компилируем паттерн
         Pattern pat;
         pat = Pattern.compile(emailRegex);
 
+        //сравниваем введенный email с паттерном
         return email != null && pat.matcher(email).matches();
     }
-
 
 }
