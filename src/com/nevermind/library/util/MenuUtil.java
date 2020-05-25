@@ -7,10 +7,11 @@ import java.io.InputStreamReader;
 
 public class MenuUtil {
 
-    public static String readPass(String question) {
+    //пробовал использовать этот метод для считывания пароля с сокрытием символов при вводе, но в IntelliJ Idea он не работает.
+  /*  public static String readPass(String question) {
         Console console = System.console();
         if (console == null) {
-            System.err.println("Не удается сосздать консоль");
+            System.err.println("Не удается создать консоль");
             return null;
         }
         System.out.println(question);
@@ -19,7 +20,7 @@ public class MenuUtil {
             pass = String.valueOf(console.readPassword());
         }
         return pass;
-    }
+    }*/
 
 
     //функция для ввода n с клавиатуры

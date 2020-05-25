@@ -9,15 +9,18 @@ import java.util.ArrayList;
 
 public class Menu {
 
+    //контроллеры
     BookController bc;
     UserController uc;
 
+    //конструктор
     public Menu() {
         bc = new BookController(this);
         uc = new UserController(this);
         enterMenu();
     }
 
+    //первое меню
     public void enterMenu() {
 
         //цикл для работы с меню до нажатия кнопки "выход"
@@ -38,6 +41,7 @@ public class Menu {
         }
     }
 
+    //форма логина (считываем email и пароль, передаем их в контроллер, если все ок - выводим каталог книг)
     public void loginForm() {
         System.out.println("ВХОД");
         String email;
@@ -51,6 +55,9 @@ public class Menu {
         }
     }
 
+    //форма регистрации (считываем все поля для регистрации пользователя, пароль с повтором, и передаем в контроллер).
+    //сокрытие символов пароля с помощью Console.hideInput() в Intellij Idea не работает,
+    // а реализация с дополнительным потоком который скрывает символы выглядит громоздко, поэтмоу сокрытие символов не реализовывалось.
     public void registerForm() {
         System.out.println("РЕГИСТРАЦИЯ НОВОГО ПОЛЬЗОВАТЕЛЯ");
         String firstName;
@@ -67,14 +74,14 @@ public class Menu {
         while (!password.equals(passwordRepeat)) {
             password = MenuUtil.readS("Введите пароль: ");
             passwordRepeat = MenuUtil.readS("Повторно введите пароль: ");
-        } //TODO:рабочий ввод пароля с сокрытием символов
+        }
         if (password != null) {
             uc.register(firstName, middleName, lastName, email, password);
         }
 
     }
 
-
+    //каталог книг
     public void catalogue(int page, ArrayList<Book> books) {
         //цикл для работы с меню до нажатия кнопки "выход"
         boolean work = true;
@@ -100,7 +107,7 @@ public class Menu {
                 case 1 -> bc.previousPage(page);
                 case 2 -> bc.nextPage(page);
                 case 3 -> searchMenu();
-                case 4 -> {
+                case 4 -> { //в зависимости от прав, либо получаем информацию о книги, либо получаем доступ к инструментам редактирования
                     Book book;
                     book = bc.getBook(MenuUtil.readN("Номер книги из каталога: ", 0, bc.getBooks().size())); //считываем выбор пользователя);
                     if (uc.isAdmin()) {
@@ -109,7 +116,7 @@ public class Menu {
                         System.out.println(book.print());
                     }
                 }
-                case 5 -> {
+                case 5 -> { //в зависимости от прав, либо переходим в меню добавления, либо в менб рекомендации
                     if (uc.isAdmin()) {
                         addBookMenu();
                     } else {
@@ -122,6 +129,7 @@ public class Menu {
         }
     }
 
+    //меню добавления книги
     private void addBookMenu() {
         System.out.println("ДОБАВИТЬ КНИГУ");
         boolean isElectronic;
@@ -145,6 +153,7 @@ public class Menu {
         }
     }
 
+    //меню рекомендации книги
     private void recommendBookMenu() {
         System.out.println("РЕКОМЕНДОВАТЬ КНИГУ К ДОБАВЛЕНИЮ");
         boolean isElectronic;
@@ -168,6 +177,7 @@ public class Menu {
         uc.notifyAdmins(sb.toString());
     }
 
+    //меню поиска книги
     private void searchMenu() {
         //цикл для работы с меню до нажатия кнопки "выход"
         boolean work = true;
@@ -188,6 +198,7 @@ public class Menu {
         }
     }
 
+    //вывод информации о книге (для администраторов - с возможностью редактирования/удаления)
     public void bookInfo(Book book) {
 
         //цикл для работы с меню до нажатия кнопки "выход"
@@ -227,6 +238,5 @@ public class Menu {
                 case 3 -> work = false;
             }
         }
-
     }
 }
