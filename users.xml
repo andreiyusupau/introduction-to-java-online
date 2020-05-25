@@ -1,2 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?>
-qwerty@gmail.com/1000:58600e3a7f486e71104fe9c78a64003e:fa50d6c9ba18fd8629ed0937350615781cbef2590f751edd781db6aebb1112b8d8db278dc4fd7b7555d1ecb2710a8056e6f6aaaf8b68e3e1fc00282853bd9912/true
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<users>
+<user id="0">
+<email>admin@gmail.com</email>
+<password>1000:qDF341E82Pw/VPUE33mkcg==:jB36QEb111VAQLlam4AJ+SIm8O3WbqCRGIm2a96bjr80M01UZUCm97/kAYvAFtMTZSX0KY9Uqcg2A4rs9gnsnA==</password>
+<admin>true</admin>
+</user>
+<user id="1">
+<email>user@gmail.com</email>
+<password>1000:IZ2HZUPjOU4XThJhiZpIPg==:nN3U/N1UNA0um513iNcR3i4Mh2xQuGs2JZtuUTVyt0EixOPa92EXggVeCbumhSka+GVZWBwR30QxDmRRkxN6aw==</password>
+<admin>false</admin>
+</user>
+</users>
