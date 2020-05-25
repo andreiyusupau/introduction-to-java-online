@@ -11,7 +11,7 @@ import com.nevermind.archive.common.dao.UserDAO;
 
 public class Main {
 
-
+//инициализация и запуск клиентской части
     public static void main(String [] args){
         ArchiveClient client=new ArchiveClient();
         RecordController rc= new RecordController();
@@ -23,7 +23,7 @@ public class Main {
         uc.init(userDAO,menu);
         menu.init(uc,rc);
         ((ServerArchiveDAO)archiveDAO).init(client,rc);
-        ((ServerUserDAO)userDAO).init(client,uc);
+        ((ServerUserDAO)userDAO).init(client);
         client.init(menu);
 
 

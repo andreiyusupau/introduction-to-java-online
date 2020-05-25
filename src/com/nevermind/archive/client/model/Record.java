@@ -3,6 +3,7 @@ package com.nevermind.archive.client.model;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+//дело (serializable для возможности передачи с клиента на сревер и обратно через поток объектов)
 public class Record implements Serializable {
     private long id;
     private String firstName;
@@ -28,15 +29,15 @@ public class Record implements Serializable {
 
     @Override
     public String toString() {
-        return "Record{" +
+        return "Дело{" +
                 "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", middleName='" + middleName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", dateOfBirth=" + dateOfBirth +
-                ", yearOfEntry=" + yearOfEntry +
-                ", yearOfGraduation=" + yearOfGraduation +
-                ", description='" + description + '\'' +
+                ", Имя '" + firstName + '\'' +
+                ", Отчество '" + middleName + '\'' +
+                ", Фамилия '" + lastName + '\'' +
+                ", Дата рождения" + dateOfBirth +
+                ", год поступления " + yearOfEntry +
+                ", год выпуска " + yearOfGraduation +
+                ", характеристика '" + description + '\'' +
                 '}';
     }
 

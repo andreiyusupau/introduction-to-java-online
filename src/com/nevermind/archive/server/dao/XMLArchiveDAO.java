@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+//реализация DAO для работы с XML файлами (с использованием StAX)
 public class XMLArchiveDAO implements ArchiveDAO {
 
     private final String fileName = "archive.xml";
@@ -19,23 +20,26 @@ public class XMLArchiveDAO implements ArchiveDAO {
     public XMLArchiveDAO() {
     }
 
+    //создать запись
     @Override
     public boolean create(Record record) {
 
         File file = new File(fileName);
         boolean flag;
-        flag = !file.exists();
+        flag = !file.exists(); //если файл не существует
 
-
+        //создаем потоки ввода/вывода
         XMLEventReader reader = null;
         XMLEventWriter writer = null;
         FileOutputStream os = null;
         FileInputStream is = null;
         try {
+            //создаем фабрики ввода/вывода и событий
             XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
             XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
             XMLEventFactory eventFactory = XMLEventFactory.newInstance();
 
+            //если файл базы данных отсутствует (fileOutputStream создаст новый файл)
             if (flag) {
                 os = new FileOutputStream(file);
                 writer = xmlOutputFactory.createXMLEventWriter(os);
@@ -58,7 +62,7 @@ public class XMLArchiveDAO implements ArchiveDAO {
 
                 os.close();
                 writer.close();
-            } else {
+            } else { //если файл существует, переписываем его содержимое в temp.xml добавляем туда нвоую запись
                 File temp = new File("temp.xml");
                 os = new FileOutputStream(temp);
                 writer = xmlOutputFactory.createXMLEventWriter(os);
@@ -96,6 +100,7 @@ public class XMLArchiveDAO implements ArchiveDAO {
                 os.close();
                 writer.close();
 
+                //заменяем содержимое файла file.xml содержимым файла temp.xml
                 try {
                     Files.move(Path.of(temp.toURI()), Path.of(file.toURI()), StandardCopyOption.REPLACE_EXISTING);
                 } catch (IOException e) {
@@ -112,6 +117,7 @@ public class XMLArchiveDAO implements ArchiveDAO {
             System.err.println("Ошибка при закрытии потока записи");
         } finally {
             try {
+                //закрываем все потоки
                 if (is != null)
                     is.close();
                 if (reader != null)
@@ -129,6 +135,7 @@ public class XMLArchiveDAO implements ArchiveDAO {
         return false;
     }
 
+    //метод для упрощения записи дела
     private void addRecord(XMLEventWriter writer, XMLEventFactory eventFactory, Record record, long currId) throws XMLStreamException {
 
         StartElement startElement;
@@ -160,7 +167,8 @@ public class XMLArchiveDAO implements ArchiveDAO {
         writer.add(endElement1);
     }
 
-    public void addNode(XMLEventWriter writer, XMLEventFactory eventFactory, String localName, String recordPart) throws XMLStreamException {
+    //метод для упрощения записи дела
+    private void addNode(XMLEventWriter writer, XMLEventFactory eventFactory, String localName, String recordPart) throws XMLStreamException {
         QName firstName = new QName(localName);
         StartElement startElement = eventFactory.createStartElement(firstName, null, null);
         writer.add(startElement);
@@ -171,6 +179,7 @@ public class XMLArchiveDAO implements ArchiveDAO {
         writer.add(endElement);
     }
 
+    //получить дело по id(обходим файл, если id совпадает - считываем запись)
     @Override
     public Record read(long id) {
         XMLEventReader reader = null;
@@ -202,6 +211,7 @@ public class XMLArchiveDAO implements ArchiveDAO {
             System.err.println("Ошибка при чтении файла");
         } finally {
             try {
+                //закрываем поток
                 if (reader != null)
                     reader.close();
             } catch (XMLStreamException e) {
@@ -211,9 +221,10 @@ public class XMLArchiveDAO implements ArchiveDAO {
         return null;
     }
 
+    //функция для упрощения кода чтения из файла
     public void readRecord(XMLEventReader reader, XMLEvent nextEvent, Record record) throws XMLStreamException {
         record.setId(Long.parseLong(nextEvent.asStartElement().getAttributeByName(new QName("id")).getValue()));
-        boolean flag = true;
+        boolean flag = true; //false означает что запись считана и пора прекратить чтение
         while (reader.hasNext() && flag) {
             nextEvent = reader.nextEvent();
             if (nextEvent.isStartElement()) {
@@ -253,7 +264,7 @@ public class XMLArchiveDAO implements ArchiveDAO {
         }
     }
 
-
+//получить все дела
     @Override
     public List<Record> readAll() {
         XMLEventReader reader = null;
@@ -297,12 +308,15 @@ public class XMLArchiveDAO implements ArchiveDAO {
 
     }
 
+    //обновить дело
     @Override
     public boolean update(Record record) {
-        long targetId = record.getId();
+        long targetId;
+        targetId= record.getId();
         File file = new File(fileName);
         boolean flag;
-        flag = !file.exists();
+        flag = !file.exists(); //если файл не существует
+
         XMLEventReader reader = null;
         XMLEventWriter writer = null;
         FileOutputStream os = null;
@@ -318,7 +332,7 @@ public class XMLArchiveDAO implements ArchiveDAO {
             os = new FileOutputStream(temp);
             writer = xmlOutputFactory.createXMLEventWriter(os);
 
-            if (flag) {
+            if (flag) { //если файл не существует (создаем новый файл и добавляем туда запись id=0)
                 StartDocument startDocument = eventFactory.createStartDocument("UTF-8", "1.0");
                 writer.add(startDocument);
                 Characters space;
@@ -335,7 +349,8 @@ public class XMLArchiveDAO implements ArchiveDAO {
                 writer.add(endElement);
                 EndDocument endDocument = eventFactory.createEndDocument();
                 writer.add(endDocument);
-            } else {
+            } else { //если файл существует (считываем файл последовательно, переписывая его содержимое в файл temp.xml
+                //если id соответствует нужному, то вместо исходнйо записи записываем в temp ее новую версию)
                 long currId = 0;
                 while (reader.hasNext()) {
                     XMLEvent nextEvent = reader.nextEvent();
@@ -362,6 +377,7 @@ public class XMLArchiveDAO implements ArchiveDAO {
             reader.close();
             os.close();
             writer.close();
+            //заменяем содержимое файла archive.xml содержимым файла temp.xml
             try {
                 Files.move(Path.of(temp.toURI()), Path.of(file.toURI()), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
@@ -375,6 +391,7 @@ public class XMLArchiveDAO implements ArchiveDAO {
             e.printStackTrace();
         } finally {
             try {
+                //закрываем все потоки
                 if (is != null)
                     is.close();
                 if (reader != null)

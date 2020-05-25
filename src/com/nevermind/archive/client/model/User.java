@@ -2,11 +2,12 @@ package com.nevermind.archive.client.model;
 
 import java.io.Serializable;
 
+//пользователь (serializable для возможности передачи с клиента на сревер и обратно через поток объектов)
 public class User implements Serializable {
 
-    private String email;
-    private String hashedPassword;
-    private boolean admin;
+    private final String email;
+    private final String hashedPassword;
+    private final boolean admin;
 
     public User(String email, String hashedPassword,boolean admin) {
         this.email = email;

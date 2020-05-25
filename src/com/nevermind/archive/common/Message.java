@@ -2,12 +2,13 @@ package com.nevermind.archive.common;
 
 import java.io.Serializable;
 
+//класс-обертка для обмена информацией между клиентом и сервером
 public class Message implements Serializable {
 
-    private String message;
-    private Object content;
-    private String username;
-    private String hashedPass;
+    private final String message; //текст сообщения(согласно протоколу обмена сообщениямимежду клиентом и сервером)
+    private final Object content; //содержимое сообщения
+    private final String username; //логин (для проведения операций требующих права доступа)
+    private final String hashedPass; //пароль (для проведения операций требующих права доступа)
 
     public Message(String message, Object content, String username, String hashedPass) {
         this.message = message;

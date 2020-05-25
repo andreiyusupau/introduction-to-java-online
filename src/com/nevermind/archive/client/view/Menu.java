@@ -4,6 +4,7 @@ import com.nevermind.archive.client.controller.RecordController;
 import com.nevermind.archive.client.controller.UserController;
 import com.nevermind.archive.common.util.Util;
 
+//меню
 public class Menu {
 
     private UserController uc;
@@ -11,12 +12,13 @@ public class Menu {
 
     public Menu() {
     }
-
+//инициализация
     public void init(UserController uc, RecordController rc) {
         this.uc = uc;
         this.rc = rc;
     }
 
+    //приветственное меню
     public void enterMenu() {
 
         //цикл для работы с меню до нажатия кнопки "выход"
@@ -37,6 +39,7 @@ public class Menu {
         }
     }
 
+    //логин
     public void loginForm() {
         System.out.println("ВХОД");
         String email;
@@ -52,6 +55,9 @@ public class Menu {
         }
     }
 
+    //форма регистрации (считываем все поля для регистрации пользователя, пароль с повтором, и передаем в контроллер).
+    //сокрытие символов пароля с помощью Console.hideInput() в Intellij Idea не работает,
+    // а реализация с дополнительным потоком который скрывает символы выглядит громоздко, поэтмоу сокрытие символов не реализовывалось.
     public void registerForm() {
         System.out.println("РЕГИСТРАЦИЯ НОВОГО ПОЛЬЗОВАТЕЛЯ");
         String email;
@@ -62,15 +68,14 @@ public class Menu {
         while (!password.equals(passwordRepeat)) {
             password = Util.readS("Введите пароль: ");
             passwordRepeat = Util.readS("Повторно введите пароль: ");
-        } //TODO:рабочий ввод пароля с сокрытием символов
+        }
         if (password != null) {
             uc.register(email, password);
         }
 
     }
 
-
-
+    //главное меню
     public void menu() {
         //цикл для работы с меню до нажатия кнопки "выход"
         boolean work = true;
@@ -105,10 +110,7 @@ public class Menu {
                 );
                 case 3 -> System.out.println(rc.read(Util.readN("Введите id: ",0,999999)).toString());
                 case 4 -> System.out.println(rc.readAll().toString());
-                case 0 -> {
-                    work = false;
-                    //nc.onExit();
-                } //выход из программы
+                case 0 -> work = false; //выход из программы
             }
         }
     }

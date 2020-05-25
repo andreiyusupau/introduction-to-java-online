@@ -6,29 +6,33 @@ import com.nevermind.archive.common.dao.UserDAO;
 import com.nevermind.archive.client.model.User;
 import com.nevermind.archive.client.view.Menu;
 
-
+//контроллер пользователей
 public class UserController {
 
-    private UserDAO userDAO;
-    private Menu menu;
-    private User currentUser;
+    private UserDAO userDAO; //ссылка на dao
+    private Menu menu; //ссылка на view
+    private User currentUser; //текущий пользвоатель
 
     public UserController() {
     }
 
+    //инициализация
     public void init(UserDAO userDAO, Menu menu) {
         this.userDAO = userDAO;
         this.menu = menu;
     }
 
+    //получить пароль
     public String getUserPassword(){
         return   currentUser.getHashedPassword();
     }
 
+    // получить имя пользователя
     public String getUsername(){
         return currentUser.getEmail();
     }
 
+    //логин
     public boolean login(String email, String password) {
 
         if(userDAO.login(email,password)){
@@ -40,14 +44,14 @@ public class UserController {
         }
     }
 
+    //регистрация
     public void register(String email, String password) {
-        if (!password.contains("/")) {
+
             if (Util.isEmailValid(email)) {
                 String hashedPassword;
-                hashedPassword = Util.generatePasswordHash(password);
+                hashedPassword = Util.generatePasswordHash(password); //хешируем пароль
                 if (hashedPassword != null) {
-                    System.out.println("CREATE USER");
-                    userDAO.create(new User(email, hashedPassword,false));
+                    userDAO.create(new User(email, hashedPassword,false)); //создаем пользователя
                     hashedPassword = null;
                     System.out.println("Пользователь успешно добавлен.");
                     menu.loginForm();
@@ -59,11 +63,6 @@ public class UserController {
                 System.err.println("Введенный email не соответствует шаблону");
                 menu.enterMenu();
             }
-
-        } else {
-            System.err.println("Введенные данные не должны содержать знак \"/\"");
-            menu.enterMenu();
-        }
     }
 
 }

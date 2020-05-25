@@ -3,8 +3,7 @@ package com.nevermind.archive.common.dao;
 
 import com.nevermind.archive.client.model.User;
 
-import java.util.List;
-
+//интерфейс DAO для работы с пользователями. Необходим для унификации доступа со стороны контроллера независимо от типа базы данных
 public interface UserDAO {
 
     boolean create(User user);
