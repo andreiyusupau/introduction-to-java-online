@@ -2,6 +2,7 @@ package com.nevermind.notepad.model.specs;
 
 import com.nevermind.notepad.model.Note;
 
+//фильтр по email
 public class NoteSpecificationByEmail implements NoteSpecification{
 
     private final String desiredEmail;

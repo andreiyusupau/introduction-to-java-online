@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 public class Util {
 
-
+//функция для сравнения текста с шаблоном regExp
     public static boolean verify(String input, String pattern) {
         return Pattern.matches(pattern, input);
     }

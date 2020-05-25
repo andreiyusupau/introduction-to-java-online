@@ -2,14 +2,15 @@ package com.nevermind.notepad.model.specs;
 
 import com.nevermind.notepad.model.Note;
 
+//фильтр по заголовку
 public class NoteSpecificationByTitle implements NoteSpecification{
 
-        private final String desiredTitle;
+    private final String desiredTitle;
 
-        public NoteSpecificationByTitle(String desiredTitle) {
-            super();
-            this.desiredTitle = desiredTitle;
-        }
+    public NoteSpecificationByTitle(String desiredTitle) {
+        super();
+        this.desiredTitle = desiredTitle;
+    }
 
 
     @Override

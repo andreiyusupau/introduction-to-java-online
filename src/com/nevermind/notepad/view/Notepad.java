@@ -4,8 +4,6 @@ import com.nevermind.notepad.controller.NotepadController;
 import com.nevermind.notepad.model.Note;
 import com.nevermind.notepad.util.Util;
 
-import java.util.ArrayList;
-
 /*Задание 2. Блокнот. Разработать консольное приложение, работающее с Заметками
         в Блокноте. Каждая Заметка это: Заметка (тема, дата создания, e-mail, сообщение).
         Общие пояснения к практическому заданию.
@@ -20,9 +18,10 @@ import java.util.ArrayList;
         осуществлять с использованием регулярных выражений.
         • Особое условие: проверку введенной информации на валидность должен
         осуществлять код, непосредственно добавляющий информацию.*/
+
 public class Notepad {
 
-    NotepadController nc;
+    NotepadController nc; //ссылка на контроллер
 
     public Notepad(NotepadController nc) {
         this.nc = nc;
@@ -71,11 +70,11 @@ public class Notepad {
 
             //переходим в определенную ветку программы или выходим из нее
             switch (n) {
-                case 1 -> nc.addTitleFilter(Util.readS("Название должно содержать: ") );
-                case 2 -> nc.addFromDateFilter(Util.readS("Начиная от даты(дд.мм.гггг): ") );
-                case 3 -> nc.addToDateFilter(Util.readS("Заканчивая датой(дд.мм.гггг): ") );
-                case 4 -> nc.addEmailFilter(Util.readS("Email: ") );
-                case 5 -> nc.addMessageFilter(Util.readS("Сообщение содержит: ") );
+                case 1 -> nc.addTitleFilter(Util.readS("Название должно содержать: "));
+                case 2 -> nc.addFromDateFilter(Util.readS("Начиная от даты(гггг-мм-дд): "));
+                case 3 -> nc.addToDateFilter(Util.readS("Заканчивая датой(гггг-мм-дд): "));
+                case 4 -> nc.addEmailFilter(Util.readS("Email: "));
+                case 5 -> nc.addMessageFilter(Util.readS("Сообщение содержит: "));
                 case 6 -> System.out.println(nc.search().toString());
                 case 7 -> nc.restoreFilter();
                 case 0 -> work = false; //выход из программы

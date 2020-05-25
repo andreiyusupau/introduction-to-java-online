@@ -2,13 +2,14 @@ package com.nevermind.notepad.model;
 
 import java.time.LocalDate;
 
+//заметка
 public class Note {
-    private String title;
-    private LocalDate date;
-    private String email;
-    private String message;
+    private final String title;//название
+    private final LocalDate date; //дата
+    private final String email; //email
+    private final String message; //текст
 
-    public Note(String title, LocalDate  date, String email, String message) {
+    public Note(String title, LocalDate date, String email, String message) {
         this.title = title;
         this.date = date;
         this.email = email;
@@ -33,11 +34,11 @@ public class Note {
 
     @Override
     public String toString() {
-        return "Note{" +
-                "topic='" + title + '\'' +
-                ", date=" + date +
-                ", email='" + email + '\'' +
-                ", message='" + message + '\'' +
+        return "Заметка{" +
+                "Тема '" + title + '\'' +
+                ", дата " + date +
+                ", email '" + email + '\'' +
+                ", текст '" + message + '\'' +
                 '}';
     }
 }

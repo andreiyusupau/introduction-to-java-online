@@ -1,12 +1,12 @@
 Test
 2020-05-16
-ksfdaa@fsdfd.com
+test@gmail.com
 My first note!
-ASdsadas
+Test2
 2020-05-16
-dfsfsd@fdfs.com
-dsdfsdfffsd
-Face
+double@mail.com
+Other Note
+Test3
 2020-05-16
 face@face.ru
 Third test case

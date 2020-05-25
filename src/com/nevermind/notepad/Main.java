@@ -17,7 +17,9 @@ import com.nevermind.notepad.controller.NotepadController;
         • Особое условие: проверку введенной информации на валидность должен
         осуществлять код, непосредственно добавляющий информацию.*/
 
-//TODO:RegExp
+/*Приложение построено по принципу MVC, для доступа к файлу используется DAO
+ (это позволит реализовать хранение в , например, в БД в дальнейшем без значительных затрат)
+ для поисковых запросов используется паттерн Specification*/
 public class Main {
     public static void main(String[] args) {
         NotepadController nc = new NotepadController();

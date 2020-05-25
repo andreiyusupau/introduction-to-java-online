@@ -4,6 +4,7 @@ import com.nevermind.notepad.model.Note;
 
 import java.time.LocalDate;
 
+//фильтр по дате (не ранее)
 public class NoteSpecificationFromDate implements NoteSpecification{
 
     private final LocalDate desiredDateFrom;
