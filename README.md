@@ -1,3 +1,2 @@
-# 1_Basics_of_software_code_development
-В данном репозитории находятся решения задач из первой части курса [Introduction to Java Online](https://training.by/#!/Training/2397?lang=en).
-Пакет linearPrograms содержит решения задач раздела "Линейные программы", пакет branching - "Ветвления", пакет loops - "Циклы".
+# 2_Algorithmization
+В данном репозитории находятся решения задач из второй части курса [Introduction to Java Online](https://training.by/#!/Training/2397?lang=en). Пакет onedimarrays содержит решения задач раздела "Одномерные массивы", пакет twodimarrays - "Задачи.Массивы массивов", пакет sort - "Одномерные массивы. Сортировки", пакет decomposition - "Декомпозиция с использованием методов(подпрограммы)".
