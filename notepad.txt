@@ -1,0 +1,12 @@
+Test
+2020-05-16
+test@gmail.com
+My first note!
+Test2
+2020-05-16
+double@mail.com
+Other Note
+Test3
+2020-05-16
+face@face.ru
+Third test case
