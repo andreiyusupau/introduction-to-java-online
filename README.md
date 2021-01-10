@@ -1,0 +1,2 @@
+# 3_Strings_and_basics_of_text_processing
+В данном репозитории находятся решения задач из третьей части курса [Introduction to Java Online](https://training.by/#!/Training/2397?lang=en). Пакет chararr содержит решения задач раздела "Работа со строкой как с массивом символов", пакет strobj - "работа со строкой как с объектом типа String или StringBuilder", пакет regexp - "Работа с регулярными выражениями (Pattern, Matcher)".
